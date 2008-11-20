@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/" xmlns:ece="http://www.escenic.com/ece40/io" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ex="http://www.mobiletech.no/rss/ex10" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Dagens Nyheter</title>
+    <link>http://www.dn.se/DNet/custom-jsp/rss.jsp?d=1399&amp;numItems=20</link>
+    <description>De viktigaste nyheterna från Sveriges största morgontidning.</description>
+    <category domain="http://www.dn.se">DN</category>
+
+    <item>
+      <title>"Fisket måste bära sina egna kostnader"</title>
+      <link>http://www.dn.se/DNet/jsp/polopoly.jsp?d=147&amp;a=852853&amp;rss=1399</link>
+      <description>Eskil Erlandsson om kritiken mot fiskepolitiken. Jordbruksministern anser att det statliga st&amp;ouml;det m&amp;aring;ste minska.</description>
+      <category domain="http://www.dn.se">Nyheter</category>
+      <pubDate>Mon, 17 Nov 2008 14:06:36 GMT</pubDate>
+      <guid>http://www.dn.se/DNet/jsp/polopoly.jsp?d=147&amp;a=852853&amp;rss=1399</guid>
+      <dc:date>2008-11-17T14:06:36Z</dc:date>
+    </item>
+
+    <item>
+      <title>"Guantánamo ska stängas"</title>
+      <link>http://www.dn.se/DNet/jsp/polopoly.jsp?d=3166&amp;a=852636&amp;rss=1399</link>
+      <description>F&amp;ouml;rs&amp;auml;kringar i tv-intervju. Blivande presidenten Barack Obama lovar att ta hem trupperna fr&amp;aring;n Irak och st&amp;auml;nga Guantanamof&amp;auml;ngelset.</description>
+      <category domain="http://www.dn.se">Nyheter</category>
+      <pubDate>Mon, 17 Nov 2008 05:39:18 GMT</pubDate>
+      <guid>http://www.dn.se/DNet/jsp/polopoly.jsp?d=3166&amp;a=852636&amp;rss=1399</guid>
+      <dc:creator>TT-AFP</dc:creator>
+      <dc:date>2008-11-17T05:39:18Z</dc:date>
+    </item>
+  </channel>
+</rss>

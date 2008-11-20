@@ -1,0 +1,33 @@
+#+TITLE:     notes.org
+#+AUTHOR:    Anton Johansson
+#+EMAIL:     anton.johansson@gmail.com
+#+DATE:      2008-11-18 Tue
+
+* Class
+  + RSSParser
+  + RSSFeed
+    - title, required
+    - link, required
+    - description, required
+  + RSSItem «Interface» <= RSS2Item
+    - title
+    - link
+    - description
+    - pubDate
+    - guid, Optional and only for RSS 2.0, A string that uniquely
+      identifies the item.
+    - author
+    - comments, URL of a page for comments relating to the item.
+  + item tags
+    |------+-----+------+------+-----+---------------|
+    | 0.90 | 1.0 | 0.91 | 0.92 | 2.0 | Item          |
+    |------+-----+------+------+-----+---------------|
+    | R    | R   | R    | R    | R   | <item>        |
+    | R    | R   | R    | O    | R   | <title>       |
+    | N    | O   | O    | O    | R   | <description> |
+    | R    | R   | R    | O    | O   | <link>        |
+    | N    | N   | N    | N    | O   | <author>      |
+    | N    | N   | N    | N    | O   | <comments>    |
+    | N    | N   | N    | N    | O   | <pubDate>     |
+    |------+-----+------+------+-----+---------------|
+
