@@ -1,6 +1,6 @@
 /*
  * @(#)JeedReader.java
- * Time-stamp: "2008-11-19 23:09:04 anton"
+ * Time-stamp: "2008-11-20 13:05:05 anton"
  */
 
 import java.io.File;
@@ -17,17 +17,18 @@ public class JeedReader {
         try {
             RssParser parser =
                 new RssParser(new URL("http://sydsvenskan.se/senastenytt/?context=senasteNyttRss"));
-            System.out.println(parser.getRssChannel());
-        }
-        catch (IOException e) {
+            logger.info(parser.getRssChannel().toString());
+        } catch (IOException e) {
             // TODO - File not found.
             e.printStackTrace();
-        }
-        catch (JDOMException e) {
+        } catch (JDOMException e) {
             e.printStackTrace();
         }
+        
+        // Create GUI
+        // new JeedGui();
     }
-
+    
     public static void main(String[] args) {
         Logger.getLogger("jeedreader").setLevel(Level.INFO);
         new JeedReader();

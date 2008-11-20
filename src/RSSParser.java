@@ -1,6 +1,6 @@
 /*
  * @(#)RssParser.java
- * Time-stamp: "2008-11-20 10:23:58 anton"
+ * Time-stamp: "2008-11-20 12:56:25 anton"
  * TODO - character encoding.
  */
 
@@ -13,8 +13,8 @@ import java.util.logging.Logger;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.Date;
-import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class RssParser {
     private String rssVersion;
@@ -62,12 +62,15 @@ public class RssParser {
                         itemElement.getChildTextTrim("description"));
         String dateString = itemElement.getChildTextTrim("pubDate");
         Date pubDate;
-        try {
-            pubDate = DateFormat.getDateInstance(DateFormat.MEDIUM).parse(dateString);
-        } catch (ParseException e) {
-            logger.warning("There was an error parsing date: " + dateString);
-            pubDate = null;
-        }
+        // TODO - big toddo
+        pubDate = new Date(dateString);
+        // try {
+        //             // Mon, 17 Nov 2008 14:06:36 GMT
+        //             // pubDate = SimpleDateFormat();
+        //         } catch (ParseException e) {
+        //             logger.warning("There was an error parsing date: " + dateString);
+        //             pubDate = null;
+        //         }
         rssChannel.addItem(item);
     }
 
@@ -76,7 +79,7 @@ public class RssParser {
     }
     
     public URL parseURL(String urlString) {
-        try{
+        try {
             // Throws: MalformedURLException
             return new URL(urlString);
         } catch (MalformedURLException e) {
