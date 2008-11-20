@@ -1,6 +1,6 @@
 /*
  * @(#)JeedReader.java
- * Time-stamp: "2008-11-20 13:05:05 anton"
+ * Time-stamp: "2008-11-20 18:41:03 anton"
  */
 
 import java.io.File;
@@ -26,7 +26,7 @@ public class JeedReader {
         }
         
         // Create GUI
-        // new JeedGui();
+        new JeedGui();
     }
     
     public static void main(String[] args) {

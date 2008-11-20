@@ -1,6 +1,6 @@
 /*
  * @(#)RssItem.java
- * Time-stamp: "2008-11-19 22:55:08 anton"
+ * Time-stamp: "2008-11-20 18:19:47 anton"
  */
 
 import java.util.Date;
@@ -39,6 +39,7 @@ public class RssItem {
     @Override
     public String toString() {
         return "\nTitle: " + title + "\n"
-            + "Description: " + description + "\n";
+            + "Description: " + description + "\n"
+            + "Time: " + pubDate + "\n";
     }
 }

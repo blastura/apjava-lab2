@@ -1,6 +1,6 @@
 /*
  * @(#)RssParser.java
- * Time-stamp: "2008-11-20 12:56:25 anton"
+ * Time-stamp: "2008-11-20 18:42:41 anton"
  * TODO - character encoding.
  */
 
@@ -20,7 +20,7 @@ public class RssParser {
     private String rssVersion;
     private RssChannel rssChannel;
     private static Logger logger = Logger.getLogger("jeedreader");
-        
+    
     public RssParser(URL url) throws IOException, JDOMException {
         // Throws. IOException, JDOMException
         parseRss(loadXml(url));
@@ -62,15 +62,20 @@ public class RssParser {
                         itemElement.getChildTextTrim("description"));
         String dateString = itemElement.getChildTextTrim("pubDate");
         Date pubDate;
-        // TODO - big toddo
-        pubDate = new Date(dateString);
-        // try {
-        //             // Mon, 17 Nov 2008 14:06:36 GMT
-        //             // pubDate = SimpleDateFormat();
-        //         } catch (ParseException e) {
-        //             logger.warning("There was an error parsing date: " + dateString);
-        //             pubDate = null;
-        //         }
+        // TODO - varify dates on different feeds
+        try {
+            //                         Mon, 17 Nov 2008 14:06:36 GMT
+            //                         Thu, 20 Nov 2008 18:03:46 +0100
+            SimpleDateFormat df
+                = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
+            pubDate = df.parse(dateString);
+            logger.info("dateString: " + dateString + "\n"
+                        + "pubDate: " + pubDate);
+            item.setPubDate(pubDate);
+        } catch (ParseException e) {
+            logger.warning("There was an error parsing date: " + dateString);
+            pubDate = null;
+        }
         rssChannel.addItem(item);
     }
 
@@ -88,7 +93,6 @@ public class RssParser {
             return null;
         }
     }
-    
     
     /**
      * TODO - add correct author or somehting
