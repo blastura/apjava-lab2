@@ -1,6 +1,6 @@
 /*
  * @(#)FeedChannel.java
- * Time-stamp: "2008-11-25 15:37:47 anton"
+ * Time-stamp: "2008-11-25 17:45:34 anton"
  */
 
 import java.net.URL;
@@ -25,6 +25,18 @@ abstract public class FeedChannel {
         this.items = new ArrayList<FeedItem>();
     }
 
+    public String getTitle() {
+        return this.title;
+    }
+
+    public URL getLink() {
+        return this.link;
+    }
+    
+    public String getDescribtion() {
+        return this.description;
+    }
+    
     public String getType() {
         return this.type;
     }

@@ -1,28 +1,20 @@
 /*
  * @(#)JeedConfigParser.java
- * Time-stamp: "2008-11-25 08:12:08 anton"
+ * Time-stamp: "2008-11-25 17:53:29 anton"
  */
 
 import java.io.File;
-import org.jdom.Document;
 import java.io.FilenameFilter;
 
 public class JeedConfigParser extends RssParser { 
     // private Document doc;
     private static final File CONF_DIR = new File("config");
+    private FeedOutputter feedOutputter;
     
     public JeedConfigParser() {
-        //         try {
-        //             this.doc = JdomUtil.loadXml(new File(FEEDS_FILE));
-        //         }
-        //         catch (IOException e) {
-        //             e.printStackTrace();
-        //         } catch (JDOMException e) {
-        //             e.printStackTrace();
-        //         }
-        //         super.parseRss(doc);
+        this.feedOutputter = new FeedOutputter();
     }
-
+    
     /**
      * Returns an array containing all files in CONF_DIR which end with
      * feed.xml, these files should contain saved feeds.
