@@ -6,8 +6,10 @@
   <property name="doc.dir" location="doc"/>
   <property name="src.dir" location="src"/>
   <property name="src.resources.dir" location="${src.dir}/resources"/>
+  <property name="src.config.dir" location="${src.dir}/config"/>
   <property name="lib.dir" location="lib"/>
   <property name="test.dir" location="test"/>
+  <property name="test.config.dir" location="${test.dir}/config"/>
   <property name="index.dir" location="index"/>
   
   <path id="project.classpath">
@@ -44,7 +46,14 @@
   </target>
 
   <target name="test" depends="compile-tests">
-    <junit haltonfailure="true">
+    <copy todir="${build.test.dir}/config">
+      <fileset dir="${test.config.dir}"/>
+    </copy>
+    <copy todir="${build.test.dir}/resources">
+      <fileset dir="${src.resources.dir}"/>
+    </copy>
+
+    <junit haltonfailure="true" dir="${build.test.dir}" fork="true">
       <classpath refid="project.classpath" />
       <formatter type="plain" usefile="false" />
       <batchtest>

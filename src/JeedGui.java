@@ -1,6 +1,6 @@
 /*
  * @(#)JeedGui.java
- * Time-stamp: "2008-11-20 18:43:48 anton"
+ * Time-stamp: "2008-11-25 14:23:08 anton"
  */
 
 import javax.swing.JFrame;
@@ -11,6 +11,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JList;
+import java.util.List;
 
 public class JeedGui extends JFrame {
     public JeedGui() {
@@ -30,7 +32,9 @@ public class JeedGui extends JFrame {
                 }
             });
         file.add(fileQuit);
-        
+
+        // FeedList
+        // createFeedList(feeds);
         
         // Final panel
         JPanel panel = new JPanel(new BorderLayout());
@@ -41,5 +45,11 @@ public class JeedGui extends JFrame {
         this.getContentPane().add(panel);
         this.pack();
         this.setVisible(true);
+    }
+
+    public void createFeedList(RssChannel[] feeds) {
+        // FeedList
+        JList feedList = new JList(feeds);
+        this.add(feedList);
     }
 }

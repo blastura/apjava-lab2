@@ -1,21 +1,18 @@
 /*
  * @(#)RssItem.java
- * Time-stamp: "2008-11-20 18:19:47 anton"
+ * Time-stamp: "2008-11-25 14:47:31 anton"
  */
 
 import java.util.Date;
 
-public class RssItem { 
-    private String title;
-    private String description;
+public class RssItem extends FeedItem { 
     private Date pubDate;
     
     /**
      * Title and Description are required in RSS 2.0.
      */
     public RssItem(String title, String description) {
-        this.title = title;
-        this.description = description;
+        super(title, description);
     }
     
     /**
@@ -23,7 +20,7 @@ public class RssItem {
      *
      * @return The publication date of this item.
      */
-    public final Date getPubDate() {
+    public Date getPubDate() {
         return pubDate;
     }
     
@@ -32,14 +29,13 @@ public class RssItem {
      *
      * @param newPubDate The new publication date of this item.
      */
-    public final void setPubDate(final Date newPubDate) {
+    public void setPubDate(final Date newPubDate) {
         this.pubDate = newPubDate;
     }
-    
+
     @Override
     public String toString() {
-        return "\nTitle: " + title + "\n"
-            + "Description: " + description + "\n"
-            + "Time: " + pubDate + "\n";
+        return super.toString() + "\n"
+            + "PubDate: " + pubDate + "\n";
     }
 }
