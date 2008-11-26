@@ -1,8 +1,8 @@
 /*
  * @(#)RssParser.java
- * Time-stamp: "2008-11-25 15:12:05 anton"
- * TODO - character encoding.
+ * Time-stamp: "2008-11-26 21:59:16 anton"
  */
+
 
 import java.io.File;
 import java.io.IOException;
@@ -15,58 +15,55 @@ import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-public class RssParser {
-    private String feedType;
-    private String rssVersion;
-    private RssChannel rssChannel;
+
+public class RssParser implements FeedParser { 
     private static Logger logger = Logger.getLogger("jeedreader");
     
-    // For inherited classes
     public RssParser() {}
-    
-    public RssParser(URL url) throws IOException, JDOMException {
-        // Throws. IOException, JDOMException
-        parseRss(JdomUtil.loadXml(url));
-    }
-    
-    public RssParser(File file) throws IOException, JDOMException {
-        // Throws. IOException, JDOMException
-        parseRss(JdomUtil.loadXml(file));
-    }
 
-    public void parseRss(Document document) {
-        Element rootElement = document.getRootElement();
+    public RssChannel parse(Document doc) {
+        RssChannel<RssItem> rssChannel = new RssChannel("rss");
         
-        this.rssVersion = rootElement.getAttribute("version").getValue();
-        this.feedType = rootElement.getName();
-        logger.info("rssVersion: " + rssVersion);
-        Element channelElement = rootElement.getChild("channel");
-        parseChannel(channelElement);
+        Element channelElement = doc.getRootElement().getChild("channel");
+        
+        Element rootElement = doc.getRootElement();
+        String version = rootElement.getAttributeValue("version");
+        rssChannel.setVersion(version);
+
+        parseChannel(channelElement, rssChannel);
+        return rssChannel;
     }
     
-    private void parseChannel(Element channelElement) {
+    private void parseChannel(Element channelElement, RssChannel rssChannel) {
         String channelTitle = channelElement.getChildTextTrim("title");
-        URL channelLink = parseURL(channelElement.getChildTextTrim("link"));
+        rssChannel.setTitle(channelTitle);
+        
+        URL channelLink = FeedUtil.parseURL(channelElement.getChildTextTrim("link"));
+        rssChannel.setLink(channelLink);
+        
         String channelDescription
             = channelElement.getChildTextTrim("description");
-        
-        // Create new RssChannel
-        this.rssChannel = new RssChannel(feedType, rssVersion, channelTitle,
-                                         channelDescription, channelLink);
+        rssChannel.setDescribtion(channelDescription);
         
         List<Element> itemElements = channelElement.getChildren("item");
         for (Element item : itemElements) {
-            parseItem(item);
+            RssItem rssItem = new RssItem();
+            parseItem(item, rssItem);
+            rssChannel.addItem(rssItem);
         }
     }
     
-    private void parseItem(Element itemElement) {
-        RssItem item =
-            new RssItem(itemElement.getChildTextTrim("title"),
-                        itemElement.getChildTextTrim("description"));
+    public void parseItem(Element itemElement, RssItem item) {
+        // TODO - fix parseItem to rssparser
+        String title = itemElement.getChildTextTrim("title");
+        item.setTitle(title);
+        
+        String desc = itemElement.getChildTextTrim("description");
+        item.setDescribtion(desc);
+        
         String dateString = itemElement.getChildTextTrim("pubDate");
         Date pubDate;
-        // TODO - varify dates on different feeds
+        // TODO - verify dates on different formats
         try {
             //                         Mon, 17 Nov 2008 14:06:36 GMT
             //                         Thu, 20 Nov 2008 18:03:46 +0100
@@ -80,13 +77,8 @@ public class RssParser {
             logger.warning("There was an error parsing date: " + dateString);
             pubDate = null;
         }
-        rssChannel.addItem(item);
     }
 
-    public RssChannel getRssChannel() {
-        return this.rssChannel;
-    }
-    
     public URL parseURL(String urlString) {
         try {
             // Throws: MalformedURLException

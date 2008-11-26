@@ -1,6 +1,6 @@
 /*
  * @(#)FeedOutputter.java
- * Time-stamp: "2008-11-25 17:49:03 anton"
+ * Time-stamp: "2008-11-26 22:16:35 anton"
  */
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class FeedOutputter {
     public FeedOutputter() {
     }
 
-    public void output(FeedChannel channel, OutputStream out) {
+    public void output(FeedChannel<FeedItem> channel, OutputStream out) {
         Element rootElement = new Element(channel.getType());
         // TODO - Not for atom, only namespaces?
         rootElement.setAttribute("version", channel.getVersion());
@@ -41,7 +41,12 @@ public class FeedOutputter {
         for (FeedItem item : items) {
             Element itemElement = new Element("item");
             // TODO - isRead
-            itemElement.setAttribute("isRead", "" + item.isRead());
+            boolean isRead = false;
+            if (item instanceof JeedItem) {
+                isRead = ((JeedItem) item).isRead();
+            }
+            
+            itemElement.setAttribute("isRead", "" + isRead);
             channelElement.addContent(itemElement);
             
             Element itemTitleElement = new Element("title");

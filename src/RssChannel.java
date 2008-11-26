@@ -1,14 +1,11 @@
 /*
  * @(#)RssChannel.java
- * Time-stamp: "2008-11-25 15:08:51 anton"
+ * Time-stamp: "2008-11-26 22:00:42 anton"
  */
 
-import java.net.URL;
-
-public class RssChannel extends FeedChannel { 
+public class RssChannel<T> extends FeedChannel<T> { 
     
-    public RssChannel(String feedType, String version, String title,
-                      String description, URL link) {
-        super(feedType, version, title, description, link);
+    public RssChannel(String feedType) {
+        super(feedType);
     }
 }

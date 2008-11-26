@@ -1,12 +1,15 @@
 /*
  * @(#)RssItem.java
- * Time-stamp: "2008-11-25 14:47:31 anton"
+ * Time-stamp: "2008-11-26 21:19:22 anton"
  */
 
 import java.util.Date;
 
 public class RssItem extends FeedItem { 
     private Date pubDate;
+    
+    public RssItem() {
+    }
     
     /**
      * Title and Description are required in RSS 2.0.

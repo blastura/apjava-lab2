@@ -1,6 +1,6 @@
 /*
  * @(#)JeedReader.java
- * Time-stamp: "2008-11-25 16:27:57 anton"
+ * Time-stamp: "2008-11-26 19:06:43 anton"
  */
 
 import java.io.File;
@@ -9,18 +9,19 @@ import org.jdom.JDOMException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.URL;
+import org.jdom.Document;
 
 public class JeedReader {
     private static Logger logger = Logger.getLogger("jeedreader");
-    private RssParser rssParser;
+    private FeedParser feedParser;
     
     public JeedReader() {
         try {
-            //RssParser parser =
-            //    new RssParser(new URL("http://sydsvenskan.se/senastenytt/?context=senasteNyttRss"));
-            this.rssParser =
-                new RssParser(new File("resources/test2.xml"));
-            logger.info(rssParser.getRssChannel().toString());
+            //FeedParser parser =
+            //    new FeedParser(new URL("http://sydsvenskan.se/senastenytt/?context=senasteNyttRss"));
+            Document doc = FeedUtil.loadXml(new File("resources/test2.xml"));
+            this.feedParser = FeedUtil.getFeedParser(doc);
+            FeedChannel channel = feedParser.parse(doc);
         } catch (IOException e) {
             // TODO - File not found.
             e.printStackTrace();
@@ -32,8 +33,8 @@ public class JeedReader {
         // new JeedGui();
     }
 
-    public RssParser getRssParser() {
-        return this.rssParser;
+    public FeedParser getFeedParser() {
+        return this.feedParser;
     }
     
     public static void main(String[] args) {
