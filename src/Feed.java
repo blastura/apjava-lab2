@@ -1,45 +1,54 @@
 /*
- * @(#)FeedChannel.java
- * Time-stamp: "2008-11-26 21:58:20 anton"
+ * @(#)Feed.java
+ * Time-stamp: "2008-11-27 20:09:27 anton"
  */
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract public class FeedChannel<T> { 
-    private List<T> items;
+abstract public class Feed { 
+    private List<FeedItem> items;
     private String description;
     private String type;
     private String title;
     private String version;
     private URL link;
+    private URL feedLink;
     
-    public FeedChannel(String type) {
+    public Feed(String type) {
         this.type = type;
-        this.items = new ArrayList<T>();
+        this.items = new ArrayList<FeedItem>();
     }
 
     public String getTitle() {
         return this.title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public URL getLink() {
         return this.link;
+    }
+
+    public void setLink(URL link) {
+        this.link = link;
+    }
+
+    public URL getFeedLink() {
+        return this.feedLink;
+    }
+
+    public void setFeedLink(URL feedLink) {
+        this.feedLink = feedLink;
     }
     
     public String getDescribtion() {
         return this.description;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setLink(URL link) {
-        this.link = link;
-    }
-    
     public void setDescribtion(String description) {
         this.description = description;
     }
@@ -56,11 +65,11 @@ abstract public class FeedChannel<T> {
         this.version = version;
     }
     
-    public void addItem(T feedItem) {
+    public void addItem(FeedItem feedItem) {
         items.add(feedItem);
     }
 
-    public List<T> getItems() {
+    public List<FeedItem> getItems() {
         return this.items;
     }
 

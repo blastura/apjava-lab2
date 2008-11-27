@@ -1,18 +1,27 @@
 /*
  * @(#)FeedItem.java
- * Time-stamp: "2008-11-26 21:46:38 anton"
+ * Time-stamp: "2008-11-27 23:35:42 anton"
  */
 
 abstract public class FeedItem {
     private String title;
     private String description;
-    
+    private boolean isRead = false;
+
     public FeedItem() {
     }
     
     public FeedItem(String title, String description) {
         this.title = title;
         this.description = description;
+    }
+
+    public void setIsRead(boolean isRead) {
+        this.isRead = isRead;
+    }
+    
+    public boolean isRead() {
+        return this.isRead;
     }
 
     public String getTitle() {

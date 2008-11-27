@@ -1,47 +1,43 @@
 /*
  * @(#)JeedConfigParser.java
- * Time-stamp: "2008-11-26 21:49:41 anton"
+ * Time-stamp: "2008-11-27 23:52:00 anton"
  */
 
-import java.io.File;
-import java.io.FilenameFilter;
+import org.jdom.Document;
 import org.jdom.Element;
+import java.net.URL;
 
 public class JeedConfigParser extends RssParser { 
     // private Document doc;
-    private static final File CONF_DIR = new File("config");
-    private FeedOutputter feedOutputter;
     
     public JeedConfigParser() {
-        this.feedOutputter = new FeedOutputter();
+    }
+    
+    
+    @Override
+    public RssFeed parse(Document doc) {
+        RssFeed rssFeed = new RssFeed("jss");
+        
+        Element channelElement = doc.getRootElement().getChild("channel");
+        Element rootElement = doc.getRootElement();
+        
+        String version = rootElement.getAttributeValue("version");
+        rssFeed.setVersion(version);
+        
+        URL feedLink = FeedUtil.parseURL(rootElement.getAttributeValue("feedLink"));
+        rssFeed.setFeedLink(feedLink);
+        
+        parseChannel(channelElement, rssFeed);
+        return rssFeed;
     }
 
+    
+    
     @Override
     public void parseItem(Element itemElement, RssItem rssItem) {
         boolean isRead = new Boolean(itemElement.getAttributeValue("isRead"));
-        ((JeedItem) rssItem).setIsRead(isRead);
+        rssItem.setIsRead(isRead);
         super.parseItem(itemElement, rssItem);
     }
 
-    
-    /**
-     * Returns an array containing all files in CONF_DIR which end with
-     * feed.xml, these files should contain saved feeds.
-     *
-     * @return An array with feed files.
-     */
-    public File[] getFeedFiles() {
-        System.out.println(CONF_DIR.getAbsolutePath());
-        if (CONF_DIR.isDirectory()) {
-            File[] feedFiles = CONF_DIR.listFiles(new FilenameFilter() {
-                    public boolean accept(File dir, String name) {
-                        return (CONF_DIR.equals(dir)
-                                && name.matches(".*feed.xml"));
-                    }
-                });
-            return feedFiles;
-        } else {
-            return null;
-        }
-    }
 }

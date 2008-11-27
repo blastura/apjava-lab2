@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="apjava-lab1" default="compile" basedir=".">
+<project name="apjava-lab2" default="compile" basedir=".">
   <property name="build.dir" location="bin"/>
   <property name="build.main.dir" location="${build.dir}/main"/>
   <property name="build.test.dir" location="${build.dir}/test"/>
@@ -33,6 +33,10 @@
     <copy todir="${build.main.dir}/resources">
       <fileset dir="${src.resources.dir}"/>
     </copy>
+    <copy todir="${build.main.dir}/config">
+      <fileset dir="${src.config.dir}"/>
+    </copy>
+
     <javac srcdir="${src.dir}" destdir="${build.main.dir}" debug="on">
       <classpath refid="project.classpath" />
       <!-- <compilerarg value="-Xlint:unchecked"/> -->

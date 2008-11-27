@@ -1,6 +1,6 @@
 /*
  * @(#)$FeedOutputterTest.java
- * Time-stamp: "2008-11-26 20:49:13 anton"
+ * Time-stamp: "2008-11-27 20:35:43 anton"
  */
 
 import junit.framework.*;
@@ -8,19 +8,20 @@ import org.jdom.Document;
 import java.io.File;
 import java.io.IOException;
 import org.jdom.JDOMException;
-import org.jdom.Element;
+import java.util.logging.Logger;
 
 public class FeedOutputterTest extends TestCase {
+    private static Logger logger = Logger.getLogger("jeedreader");
+    
     public FeedOutputterTest(String name) {
         super(name);
     }
 
     public void testFeedOutputter() throws IOException, JDOMException {
-        Document doc = FeedUtil.loadXml(new File("resources/test2.xml"));
-        FeedParser feedParser = FeedUtil.getFeedParser(doc);
-        FeedChannel channel = feedParser.parse(doc);
+        logger.info("In testFeedOutputter");
         
-        FeedOutputter op = new FeedOutputter();
-        op.output(channel, System.out);
+        //FeedChannel channel = new FeedUtil().makeFeed("resources/test2.xml");
+        //FeedOutputter op = new FeedOutputter();
+        //op.output(channel, System.out);        
     }
 }

@@ -1,6 +1,6 @@
 /*
  * @(#)FeedUtil.java
- * Time-stamp: "2008-11-26 22:09:11 anton"
+ * Time-stamp: "2008-11-27 23:58:44 anton"
  */
 
 import java.io.File;
@@ -16,9 +16,49 @@ import java.util.logging.Logger;
 public class FeedUtil {
     private static Logger logger = Logger.getLogger("jeedreader");
     
-    public FeedUtil() {
+    public Feed makeFeed(File file) {
+        System.out.println("Path to file: "
+                           + file.getAbsolutePath());
+        try {
+            Document doc = loadXml(file);
+            FeedParser feedParser = getFeedParser(doc);
+            Feed feed = feedParser.parse(doc);
+            return feed;
+        } catch (IOException e) {
+            // TODO
+            e.printStackTrace();
+            System.exit(-1);
+            return null;
+        } catch (JDOMException e) {
+            // TODO
+            e.printStackTrace();
+            System.exit(-1);
+            return null;
+        }
+        
     }
-
+    
+    public Feed makeFeed(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            Document doc = loadXml(url);
+            FeedParser feedParser = getFeedParser(doc);
+            Feed feed = feedParser.parse(doc);
+            feed.setFeedLink(url);
+            return feed;
+        } catch (IOException e) {
+            // TODO
+            e.printStackTrace();
+            System.exit(-1);
+            return null;
+        } catch (JDOMException e) {
+            // TODO
+            e.printStackTrace();
+            System.exit(-1);
+            return null;
+        }
+    }
+    
     public static FeedParser getFeedParser(Document doc) throws IOException,
                                                                 JDOMException {
         Element rootElement = doc.getRootElement();
@@ -27,7 +67,7 @@ public class FeedUtil {
         if (feedType.equalsIgnoreCase("rss")) {
             // TODO Rss versions
             // String feedVersion = rootElement.getAttribute("version").getValue();
-            return new RssParser();
+            return new JeedConfigParser();
         } else if (feedType.equalsIgnoreCase("jss")) {
             return new JeedConfigParser();
         } else {
@@ -44,7 +84,8 @@ public class FeedUtil {
             return new URL(urlString);
         } catch (MalformedURLException e) {
             //TODO
-            logger.warning("MalformedURLException");
+            logger.warning("MalformedURLException from \n"
+                           + "urlString: " + urlString);
             return null;
         }
     }
@@ -59,7 +100,7 @@ public class FeedUtil {
      * @throws JDOMException
      *
      */
-    public static Document loadXml(URL srcURL) throws IOException,
+    private Document loadXml(URL srcURL) throws IOException,
                                                       JDOMException {
         SAXBuilder builder = new SAXBuilder();
         Document doc = builder.build(srcURL);
@@ -76,7 +117,7 @@ public class FeedUtil {
      * @throws JDOMException
      *
      */
-    public static Document loadXml(File srcFile) throws IOException, JDOMException {
+    private Document loadXml(File srcFile) throws IOException, JDOMException {
         SAXBuilder builder = new SAXBuilder();
         Document doc = builder.build(srcFile);
         return doc;

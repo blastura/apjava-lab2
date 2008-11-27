@@ -1,6 +1,6 @@
 /*
- * @(#)JeedGui.java
- * Time-stamp: "2008-11-25 14:23:08 anton"
+ * @(#)JeedView.java
+ * Time-stamp: "2008-11-27 23:43:36 anton"
  */
 
 import javax.swing.JFrame;
@@ -14,9 +14,13 @@ import java.awt.event.ActionEvent;
 import javax.swing.JList;
 import java.util.List;
 
-public class JeedGui extends JFrame {
-    public JeedGui() {
+public class JeedView extends JFrame {
+    private JeedModel jeedModel;
+    
+    public JeedView(JeedModel jeedModel) {
         super("JeedReader");
+        this.jeedModel = jeedModel;
+        
         //Menu
         JMenuBar menubar = new JMenuBar();
         JMenu file = new JMenu("File");
@@ -34,7 +38,9 @@ public class JeedGui extends JFrame {
         file.add(fileQuit);
 
         // FeedList
-        // createFeedList(feeds);
+        JList feedList = new JList(jeedModel.getFeeds());
+        
+        JList itemList = new JList(jeedModel.getFeeds());
         
         // Final panel
         JPanel panel = new JPanel(new BorderLayout());
@@ -44,10 +50,9 @@ public class JeedGui extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.getContentPane().add(panel);
         this.pack();
-        this.setVisible(true);
     }
 
-    public void createFeedList(RssChannel[] feeds) {
+    public void createFeedList(RssFeed[] feeds) {
         // FeedList
         JList feedList = new JList(feeds);
         this.add(feedList);
