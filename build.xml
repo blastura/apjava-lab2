@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="apjava-lab2" default="compile" basedir=".">
+  <!-- Properties -->
   <property name="build.dir" location="bin"/>
   <property name="build.main.dir" location="${build.dir}/main"/>
   <property name="build.test.dir" location="${build.dir}/test"/>
@@ -12,6 +13,7 @@
   <property name="test.config.dir" location="${test.dir}/config"/>
   <property name="index.dir" location="index"/>
   
+  <!-- Classpath -->
   <path id="project.classpath">
     <pathelement location="${build.main.dir}" />
     <pathelement location="${build.test.dir}" />
@@ -30,13 +32,15 @@
   </target> 
 
   <target name="compile" depends="prepare">
+    <!-- Copy dirs -->
     <copy todir="${build.main.dir}/resources">
       <fileset dir="${src.resources.dir}"/>
     </copy>
     <copy todir="${build.main.dir}/config">
       <fileset dir="${src.config.dir}"/>
     </copy>
-
+    
+    <!-- Compile source -->
     <javac srcdir="${src.dir}" destdir="${build.main.dir}" debug="on">
       <classpath refid="project.classpath" />
       <!-- <compilerarg value="-Xlint:unchecked"/> -->
@@ -50,13 +54,15 @@
   </target>
 
   <target name="test" depends="compile-tests">
+    <!-- Copy dirs -->
     <copy todir="${build.test.dir}/config">
       <fileset dir="${test.config.dir}"/>
     </copy>
     <copy todir="${build.test.dir}/resources">
       <fileset dir="${src.resources.dir}"/>
     </copy>
-
+    
+    <!-- Compile tests -->
     <junit haltonfailure="true" dir="${build.test.dir}" fork="true">
       <classpath refid="project.classpath" />
       <formatter type="plain" usefile="false" />

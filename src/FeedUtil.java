@@ -1,6 +1,6 @@
 /*
  * @(#)FeedUtil.java
- * Time-stamp: "2008-11-27 23:58:44 anton"
+ * Time-stamp: "2008-11-28 22:05:42 anton"
  */
 
 import java.io.File;
@@ -35,7 +35,6 @@ public class FeedUtil {
             System.exit(-1);
             return null;
         }
-        
     }
     
     public Feed makeFeed(String urlString) {
@@ -48,8 +47,7 @@ public class FeedUtil {
             return feed;
         } catch (IOException e) {
             // TODO
-            e.printStackTrace();
-            System.exit(-1);
+            System.err.println("urlString: " + urlString);
             return null;
         } catch (JDOMException e) {
             // TODO
@@ -67,7 +65,7 @@ public class FeedUtil {
         if (feedType.equalsIgnoreCase("rss")) {
             // TODO Rss versions
             // String feedVersion = rootElement.getAttribute("version").getValue();
-            return new JeedConfigParser();
+            return new RssParser();
         } else if (feedType.equalsIgnoreCase("jss")) {
             return new JeedConfigParser();
         } else {
@@ -78,15 +76,15 @@ public class FeedUtil {
     }
 
     
-    public static URL parseURL(String urlString) {
+    public static boolean isURL(String urlString) {
+            // TODO is this ok
         try {
-            // Throws: MalformedURLException
-            return new URL(urlString);
+            new URL(urlString);
+            return true;
         } catch (MalformedURLException e) {
-            //TODO
-            logger.warning("MalformedURLException from \n"
+            logger.warning("MalformedURLException from "
                            + "urlString: " + urlString);
-            return null;
+            return false;
         }
     }
     

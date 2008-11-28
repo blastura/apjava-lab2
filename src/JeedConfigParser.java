@@ -1,11 +1,12 @@
 /*
  * @(#)JeedConfigParser.java
- * Time-stamp: "2008-11-27 23:52:00 anton"
+ * Time-stamp: "2008-11-28 21:09:59 anton"
  */
 
 import org.jdom.Document;
 import org.jdom.Element;
 import java.net.URL;
+import java.net.MalformedURLException;
 
 public class JeedConfigParser extends RssParser { 
     // private Document doc;
@@ -24,7 +25,18 @@ public class JeedConfigParser extends RssParser {
         String version = rootElement.getAttributeValue("version");
         rssFeed.setVersion(version);
         
-        URL feedLink = FeedUtil.parseURL(rootElement.getAttributeValue("feedLink"));
+        
+        //URL feedLink = FeedUtil.parseURL(rootElement.getAttributeValue("feedLink"));
+        URL feedLink = null;
+        try {
+            feedLink = new URL(rootElement.getAttributeValue("feedLink"));
+        } catch (MalformedURLException e) {
+            //TODO - fix error message
+            System.err.println("Malformed url: "
+                               + rootElement.getAttributeValue("feedLink"));
+            System.err.println("Doc baseURI: " + doc.getBaseURI());
+            e.printStackTrace();
+        }
         rssFeed.setFeedLink(feedLink);
         
         parseChannel(channelElement, rssFeed);

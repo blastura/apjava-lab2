@@ -1,6 +1,6 @@
 /*
  * @(#)FeedOutputter.java
- * Time-stamp: "2008-11-27 20:45:50 anton"
+ * Time-stamp: "2008-11-28 21:11:58 anton"
  */
 
 import java.io.IOException;
@@ -41,8 +41,8 @@ public class FeedOutputter {
     }
     
     private Document makeDoc(Feed feed) {
-        Element rootElement = new Element(feed.getType());
-        // Element rootElement = new Element("jss");
+        // Element rootElement = new Element(feed.getType());
+        Element rootElement = new Element("jss");
 
         
         // TODO - Not for atom, only namespaces?

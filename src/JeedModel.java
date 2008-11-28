@@ -1,6 +1,6 @@
 /*
  * @(#)JeedModel.java
- * Time-stamp: "2008-11-27 23:40:47 anton"
+ * Time-stamp: "2008-11-28 23:58:46 anton"
  */
 
 import java.util.Vector;
@@ -22,6 +22,15 @@ public class JeedModel {
         // TODO
     }
 
+    public FeedItem[] getItemsForFeed(Feed feed) {
+        return feed.getItems().toArray(new FeedItem[0]);
+    }
+    
+    // TODO is this really the way to go????
+    public String getDescribtionFromFeedItem(FeedItem feedItem) {
+        return feedItem.getDescribtion();
+    }
+    
     public Vector<Feed> getFeeds() {
         return feeds;
     }

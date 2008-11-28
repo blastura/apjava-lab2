@@ -1,6 +1,6 @@
 /*
  * @(#)RssParser.java
- * Time-stamp: "2008-11-27 23:56:34 anton"
+ * Time-stamp: "2008-11-28 21:03:39 anton"
  */
 
 
@@ -35,7 +35,15 @@ public class RssParser implements FeedParser {
         String channelTitle = channelElement.getChildTextTrim("title");
         rssFeed.setTitle(channelTitle);
         
-        URL channelLink = FeedUtil.parseURL(channelElement.getChildTextTrim("link"));
+        // URL channelLink = FeedUtil.parseURL(channelElement.getChildTextTrim("link"));
+        URL channelLink = null;
+        try {
+            channelLink = new URL(channelElement.getChildTextTrim("link"));
+        } catch (MalformedURLException e) {
+            //TODO - fix error message
+            e.printStackTrace();
+        }
+
         rssFeed.setLink(channelLink);
         
         String channelDescription

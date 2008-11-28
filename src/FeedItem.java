@@ -1,6 +1,6 @@
 /*
  * @(#)FeedItem.java
- * Time-stamp: "2008-11-27 23:35:42 anton"
+ * Time-stamp: "2008-11-28 23:39:17 anton"
  */
 
 abstract public class FeedItem {
@@ -42,6 +42,10 @@ abstract public class FeedItem {
     
     @Override
     public String toString() {
+        return title;
+    }
+
+    public String getInfoString() {
         return "Title: " + title + "\n"
             + "Description: " + description + "\n";
     }

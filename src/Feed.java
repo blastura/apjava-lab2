@@ -1,6 +1,6 @@
 /*
  * @(#)Feed.java
- * Time-stamp: "2008-11-27 20:09:27 anton"
+ * Time-stamp: "2008-11-28 13:32:17 anton"
  */
 
 import java.net.URL;
@@ -75,6 +75,11 @@ abstract public class Feed {
 
     @Override
     public String toString() {
+        return title;
+    }
+    
+    
+    public String getInfoString() {
         return "Feed type: " + type + "\n"
             + "Title: " + title + ", Rss-version: " + version + "\n"
             + "Description: " + description + "\n"
