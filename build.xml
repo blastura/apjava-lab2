@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="apjava-lab2" default="compile" basedir=".">
   <!-- Properties -->
+  <property name="prj.java.version" value="1.6"/>
+  
+  <!-- Dir Properties -->
   <property name="build.dir" location="bin"/>
   <property name="build.main.dir" location="${build.dir}/main"/>
   <property name="build.test.dir" location="${build.dir}/test"/>
@@ -41,6 +44,7 @@
     </copy>
     
     <!-- Compile source -->
+    <!-- source="${prj.java.version}" target="${prj.java.version}" -->
     <javac srcdir="${src.dir}" destdir="${build.main.dir}" debug="on">
       <classpath refid="project.classpath" />
       <!-- <compilerarg value="-Xlint:unchecked"/> -->

@@ -1,6 +1,6 @@
 /*
  * @(#)JeedView.java
- * Time-stamp: "2008-11-30 02:04:37 anton"
+ * Time-stamp: "2008-11-30 18:39:44 anton"
  */
 
 import java.awt.BorderLayout;
@@ -28,6 +28,8 @@ import javax.swing.border.Border;
 import javax.swing.event.ListSelectionListener;
 import java.util.Observable;
 import java.awt.FlowLayout;
+import javax.swing.SwingUtilities;
+import javax.swing.DefaultListModel;
 
 public class JeedView extends JFrame implements Observer {    
     private static Logger logger = Logger.getLogger("jeedreader");
@@ -36,8 +38,13 @@ public class JeedView extends JFrame implements Observer {
 
     private JeedModel jeedModel;
     private Border paddingBorder;
+    
     private JList feedList;
+    private DefaultListModel feedListModel;
+    
     private JList itemList;
+    private DefaultListModel itemListModel;
+    
     private JEditorPane itemView;
     private JButton addFeedButton = new JButton("Add");
     private JButton updateFeedsButton = new JButton("Refresh");
@@ -65,7 +72,10 @@ public class JeedView extends JFrame implements Observer {
             });
         file.add(fileQuit);
 
-        this.feedList = new JList();
+        // FeedList
+        this.feedListModel = new DefaultListModel();
+        this.feedList = new JList(feedListModel);
+        
         // TODO, if there are no feed?
         feedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
@@ -80,7 +90,8 @@ public class JeedView extends JFrame implements Observer {
         feedPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         // ItemList
-        this.itemList = new JList();
+        this.itemListModel = new DefaultListModel();
+        this.itemList = new JList(itemListModel);
         itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //TODO itemList.setDragEnabled(true);
         JScrollPane itemsScrollPane =
@@ -117,7 +128,12 @@ public class JeedView extends JFrame implements Observer {
     }
 
     public void refreshFeeds() {
-        this.feedList.setListData(this.jeedModel.getFeeds());
+        SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    logger.info(Thread.currentThread().toString());
+                    feedList.setListData(jeedModel.getFeeds());
+                }
+            });
     }
 
     public String promtForFeedUrlString() {
@@ -140,6 +156,10 @@ public class JeedView extends JFrame implements Observer {
 
     public void setItemListListener(ListSelectionListener listSelectionListener) {
         this.itemList.addListSelectionListener(listSelectionListener);
+    }
+    
+    public void showFeedInfoMessage() {
+        // TODO show info in feedList.
     }
 
     public void showItemsForCurrentFeedSelection() {
@@ -167,7 +187,10 @@ public class JeedView extends JFrame implements Observer {
     public void showView() {
         // Populate FeedList
         Vector<Feed> feeds = jeedModel.getFeeds();
-        this.feedList.setListData(feeds);
+        for (Feed feed : feeds) {
+            this.feedListModel.addElement(feed);
+        }
+        
         this.feedList.setSelectedIndex(0);
         System.out.println("Feeds in gui: " + feeds);
 

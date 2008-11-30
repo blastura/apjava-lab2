@@ -1,6 +1,6 @@
 /*
  * @(#)Feed.java
- * Time-stamp: "2008-11-28 13:32:17 anton"
+ * Time-stamp: "2008-11-30 18:06:07 anton"
  */
 
 import java.net.URL;
@@ -15,6 +15,7 @@ abstract public class Feed {
     private String version;
     private URL link;
     private URL feedLink;
+    private boolean isRead = false;
     
     public Feed(String type) {
         this.type = type;
@@ -67,6 +68,10 @@ abstract public class Feed {
     
     public void addItem(FeedItem feedItem) {
         items.add(feedItem);
+    }
+
+    public void setIsRead(boolean isRead) {
+        this.isRead = isRead;
     }
 
     public List<FeedItem> getItems() {

@@ -1,6 +1,6 @@
 /*
  * @(#)JeedModel.java
- * Time-stamp: "2008-11-30 02:45:52 anton"
+ * Time-stamp: "2008-11-30 18:27:30 anton"
  */
 
 import java.util.Vector;

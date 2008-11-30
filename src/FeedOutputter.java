@@ -1,6 +1,6 @@
 /*
  * @(#)FeedOutputter.java
- * Time-stamp: "2008-11-29 18:00:32 anton"
+ * Time-stamp: "2008-11-30 18:04:16 anton"
  */
 
 import java.io.IOException;
@@ -78,10 +78,7 @@ public class FeedOutputter {
         for (FeedItem item : items) {
             Element itemElement = new Element("item");
             // TODO - isRead
-            boolean isRead = false;
-            if (item instanceof JeedItem) {
-                isRead = ((JeedItem) item).isRead();
-            }
+            boolean isRead = item.isRead();
             
             itemElement.setAttribute("isRead", "" + isRead);
             channelElement.addContent(itemElement);

@@ -1,6 +1,6 @@
 /*
  * @(#)JeedReader.java
- * Time-stamp: "2008-11-30 02:42:10 anton"
+ * Time-stamp: "2008-11-30 18:20:33 anton"
  */
 
 import java.awt.event.ActionEvent;
@@ -12,11 +12,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.SwingUtilities;
 
 /** Controller */
 public class JeedReader {
     public static final File CONF_DIR = new File("config");
+    private int feedUpdateInterval =  1 * 60 * 1000;
     private static Logger logger = Logger.getLogger("jeedreader");
     
     private JeedModel jeedModel;
@@ -58,7 +58,9 @@ public class JeedReader {
         jeedView.setItemListListener(new ItemListListener());
         
         jeedModel.addObserver(jeedView);
-
+        
+        // Start updates by intervall
+        this.startUpdateFeedByInterval();
         
         // Show View
         jeedView.showView();
@@ -85,6 +87,27 @@ public class JeedReader {
         }
     }
 
+    public void setUpdateFeedsInterval(int feedUpdateInterval) {
+        this.feedUpdateInterval = feedUpdateInterval;
+    }
+    
+    public void startUpdateFeedByInterval() {
+        new Thread(new Runnable() {
+                public void run() {
+                    while (true) {
+                        logger.info("Thread is: " + Thread.currentThread().toString());
+                        jeedModel.updateFeeds();
+                        try {
+                            Thread.sleep(feedUpdateInterval);
+                        }
+                        catch (InterruptedException e) {
+                            logger.warning("updateFeedByInterval was interrupted");
+                        }
+                    }
+                }
+            }, "updateFeedByIntervalThread").start();
+    }
+
     private class UpdateFeedListener implements ActionListener {
         public void actionPerformed(ActionEvent ae) {
             logger.info("Update feeds");
@@ -97,39 +120,37 @@ public class JeedReader {
         }
     }
 
-    private class AddFeedListener implements ActionListener, Runnable {
+    private class AddFeedListener implements ActionListener {
         public void actionPerformed(ActionEvent ae) {
-            SwingUtilities.invokeLater(this);
-        }
-
-        public void run() {
-            logger.info("Add a feed");
-            logger.info(Thread.currentThread().toString());
-            
-            String urlString = jeedView.promtForFeedUrlString();
-            if (!FeedUtil.isURL(urlString)) {
-                System.err.println("Url is not wellformed: " + urlString);
-                return;
-            }
-            try {
-                // Could take some time, should be run on a different thread.
-                Feed feed = FeedUtil.makeFeed(urlString);                
-                jeedModel.addFeed(feed);
-                jeedWriter.saveFeed(feed);
-                // DONE observable jeedView.refreshFeeds();
-            } catch (MalformedURLException e) {
-                //TODO - fix error message
-                logger.info("Input URL string: " + urlString);
-                e.printStackTrace();
-            }
+            new Thread(new Runnable() {
+                    public void run() {
+                        logger.info("Thread is: " + Thread.currentThread().toString());
+                        
+                        String urlString = jeedView.promtForFeedUrlString();
+                        if (!FeedUtil.isURL(urlString)) {
+                            System.err.println("Url is not wellformed: " + urlString);
+                            return;
+                        }
+                        
+                        try {
+                            // Could take some time, should be run on a different thread.
+                            Feed feed = FeedUtil.makeFeed(urlString);                
+                            jeedModel.addFeed(feed);
+                            jeedWriter.saveFeed(feed);
+                            // DONE observable jeedView.refreshFeeds();
+                        } catch (MalformedURLException e) {
+                            //TODO - fix error message
+                            logger.info("Input URL string: " + urlString);
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
         }
     }
     
     private class FeedListListener implements ListSelectionListener {
         public void valueChanged(ListSelectionEvent e) {
-            if (javax.swing.SwingUtilities.isEventDispatchThread()) {
-                logger.info("This is run on EDT");
-            }
+            logger.info("Thread is: " + Thread.currentThread().toString());
             if (e.getValueIsAdjusting() == false) {
                 logger.info("Feed changed");
                 JeedReader.this.jeedView.showItemsForCurrentFeedSelection();
@@ -139,9 +160,7 @@ public class JeedReader {
 
     private class ItemListListener implements ListSelectionListener {
         public void valueChanged(ListSelectionEvent e) {
-            if (javax.swing.SwingUtilities.isEventDispatchThread()) {
-                logger.info("This is run on EDT");
-            }
+            logger.info("Thread is: " + Thread.currentThread().toString());
             if (e.getValueIsAdjusting() == false) {
                 logger.info("Item changed");
                 JeedReader.this.jeedView.showDescForCurrentItemSelection();
