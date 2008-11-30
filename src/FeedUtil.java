@@ -1,6 +1,6 @@
 /*
  * @(#)FeedUtil.java
- * Time-stamp: "2008-11-28 22:05:42 anton"
+ * Time-stamp: "2008-11-30 01:37:55 anton"
  */
 
 import java.io.File;
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class FeedUtil {
     private static Logger logger = Logger.getLogger("jeedreader");
     
-    public Feed makeFeed(File file) {
+    public static Feed makeFeed(File file) {
         System.out.println("Path to file: "
                            + file.getAbsolutePath());
         try {
@@ -37,9 +37,13 @@ public class FeedUtil {
         }
     }
     
-    public Feed makeFeed(String urlString) {
+    public static Feed makeFeed(String urlString) throws MalformedURLException {
+        URL url = new URL(urlString);
+        return makeFeed(url);
+    }
+
+    public static Feed makeFeed(URL url) {
         try {
-            URL url = new URL(urlString);
             Document doc = loadXml(url);
             FeedParser feedParser = getFeedParser(doc);
             Feed feed = feedParser.parse(doc);
@@ -47,7 +51,7 @@ public class FeedUtil {
             return feed;
         } catch (IOException e) {
             // TODO
-            System.err.println("urlString: " + urlString);
+            System.err.println("Error with URL: " + url);
             return null;
         } catch (JDOMException e) {
             // TODO
@@ -98,7 +102,7 @@ public class FeedUtil {
      * @throws JDOMException
      *
      */
-    private Document loadXml(URL srcURL) throws IOException,
+    private static Document loadXml(URL srcURL) throws IOException,
                                                       JDOMException {
         SAXBuilder builder = new SAXBuilder();
         Document doc = builder.build(srcURL);
@@ -115,7 +119,7 @@ public class FeedUtil {
      * @throws JDOMException
      *
      */
-    private Document loadXml(File srcFile) throws IOException, JDOMException {
+    private static Document loadXml(File srcFile) throws IOException, JDOMException {
         SAXBuilder builder = new SAXBuilder();
         Document doc = builder.build(srcFile);
         return doc;

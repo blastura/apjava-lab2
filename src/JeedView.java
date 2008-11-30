@@ -1,46 +1,54 @@
 /*
  * @(#)JeedView.java
- * Time-stamp: "2008-11-29 00:03:26 anton"
+ * Time-stamp: "2008-11-30 02:04:37 anton"
  */
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JList;
-import java.util.Vector;
-import javax.swing.JSplitPane;
-import javax.swing.JEditorPane;
-import javax.swing.JButton;
-import javax.swing.BorderFactory;
-import javax.swing.border.Border;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Observer;
+import java.util.Vector;
+import java.util.logging.Logger;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.Border;
+import javax.swing.event.ListSelectionListener;
+import java.util.Observable;
+import java.awt.FlowLayout;
 
-public class JeedView extends JFrame {
-    private static final int PAD_SIZE = 2;
+public class JeedView extends JFrame implements Observer {    
+    private static Logger logger = Logger.getLogger("jeedreader");
+    private static final int PAD_SIZE = 5;
     private static final Color BKGR_COLOR = Color.WHITE;
-    
+
     private JeedModel jeedModel;
     private Border paddingBorder;
     private JList feedList;
     private JList itemList;
-    private JEditorPane itemViewer;
-    private JButton addFeedButton = new JButton("Add feed");
-    
+    private JEditorPane itemView;
+    private JButton addFeedButton = new JButton("Add");
+    private JButton updateFeedsButton = new JButton("Refresh");
+
     public JeedView(JeedModel jeedModel) {
         super("JeedReader");
         this.jeedModel = jeedModel;
         //FeedBorder borders TODO
         this.paddingBorder
             = BorderFactory.createLineBorder(BKGR_COLOR, PAD_SIZE);
-        
+
         //Menu
         JMenuBar menubar = new JMenuBar();
         JMenu file = new JMenu("File");
@@ -60,35 +68,49 @@ public class JeedView extends JFrame {
         this.feedList = new JList();
         // TODO, if there are no feed?
         feedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        this.feedList.setBorder(paddingBorder);
+        
+        // FeedButtonPanel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(addFeedButton);
+        buttonPanel.add(updateFeedsButton);
         
         // FeedPanel
         JPanel feedPanel = new JPanel(new BorderLayout());
         feedPanel.add(this.feedList, BorderLayout.CENTER);
-        feedPanel.add(addFeedButton, BorderLayout.SOUTH);
+        feedPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // ItemList TODO
+        // ItemList
         this.itemList = new JList();
         itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        itemList.setBorder(paddingBorder);
-        
+        //TODO itemList.setDragEnabled(true);
+        JScrollPane itemsScrollPane =
+            new JScrollPane(itemList,
+                            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         // ItemViewer
-        this.itemViewer = new JEditorPane("text/html", "<h1>Nyheter</h1>");
-        
+        this.itemView = new JEditorPane("text/html", "<h1>Nyheter</h1>");
+        this.itemView.setBorder(paddingBorder);
+        JScrollPane itemViewScrollPane =
+            new JScrollPane(itemView,
+                            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
         //SplitPanels
-        JSplitPane rightVerticalSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                                                   itemList,
-                                                   itemViewer);
-        
-        JSplitPane mainHorisontalSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                                                        feedPanel,
-                                                        rightVerticalSplit);
+        JSplitPane rightVerticalSplit
+            = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                             itemsScrollPane,
+                             itemViewScrollPane);
+
+        JSplitPane mainHorisontalSplit =
+            new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                           feedPanel,
+                           rightVerticalSplit);
 
         // Final panel
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(menubar, BorderLayout.NORTH);
         panel.add(mainHorisontalSplit, BorderLayout.CENTER);
-        
+
         // Frame
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.getContentPane().add(panel);
@@ -98,14 +120,18 @@ public class JeedView extends JFrame {
         this.feedList.setListData(this.jeedModel.getFeeds());
     }
 
-    public String promtForFeedLink() {
+    public String promtForFeedUrlString() {
         String result =
             JOptionPane.showInputDialog(this, "Enter the URL to a feed: ");
         return result;
     }
+
+    public void setUpdateFeedListener(ActionListener al) {
+        this.updateFeedsButton.addActionListener(al);
+    }
     
-    public void setAddFeedListener(ActionListener addFeedListener) {
-        this.addFeedButton.addActionListener(addFeedListener);
+    public void setAddFeedListener(ActionListener al) {
+        this.addFeedButton.addActionListener(al);
     }
 
     public void setFeedListListener(ListSelectionListener feedListListener) {
@@ -115,8 +141,11 @@ public class JeedView extends JFrame {
     public void setItemListListener(ListSelectionListener listSelectionListener) {
         this.itemList.addListSelectionListener(listSelectionListener);
     }
-    
+
     public void showItemsForCurrentFeedSelection() {
+        if (feedList.isSelectionEmpty()) {
+            return;
+        }
         Feed selectedFeed = (Feed) this.feedList.getSelectedValue();
         System.out.println(selectedFeed);
         FeedItem[] items = this.jeedModel.getItemsForFeed(selectedFeed);
@@ -124,24 +153,33 @@ public class JeedView extends JFrame {
     }
 
     public void showDescForCurrentItemSelection() {
+        if (itemList.isSelectionEmpty()) {
+            return;
+        }
         FeedItem selectedFeedItem = (FeedItem) this.itemList.getSelectedValue();
+        logger.info("Selected Feed: " + selectedFeedItem);
         System.out.println(selectedFeedItem);
         String description
             = this.jeedModel.getDescribtionFromFeedItem(selectedFeedItem);
-        this.itemViewer.setText(description);
+        this.itemView.setText(description);
     }
-    
+
     public void showView() {
         // Populate FeedList
         Vector<Feed> feeds = jeedModel.getFeeds();
         this.feedList.setListData(feeds);
         this.feedList.setSelectedIndex(0);
         System.out.println("Feeds in gui: " + feeds);
-        
+
         // Populate ItemList
         showItemsForCurrentFeedSelection();
         this.pack();
         this.setVisible(true);
+    }
 
+    public void update(Observable obj, Object arg) {
+        // TODO
+        logger.info("Change detected");
+        refreshFeeds();
     }
 }

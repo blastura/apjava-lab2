@@ -31,3 +31,10 @@
     | N    | N   | N    | N    | O   | <pubDate>     |
     |------+-----+------+------+-----+---------------|
 
+* Rss link
+  - http://www.dn.se/DNet/custom-jsp/rss.jsp?d=672&numItems=20, got no
+    channel-link.
+  - http://www.dn.se/DNet/custom-jsp/rss.jsp?d=1399&numItems=20
+  - http://sydsvenskan.se/senastenytt/?context=senasteNyttRss
+  - http://expressen.se/rss/nyheter
+  - http://feeds.aftonbladet.se/?service=rss

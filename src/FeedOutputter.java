@@ -1,6 +1,6 @@
 /*
  * @(#)FeedOutputter.java
- * Time-stamp: "2008-11-28 21:11:58 anton"
+ * Time-stamp: "2008-11-29 18:00:32 anton"
  */
 
 import java.io.IOException;
@@ -10,6 +10,7 @@ import org.jdom.*;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import java.io.OutputStream;
+import java.net.URL;
 
 public class FeedOutputter {
     
@@ -60,9 +61,13 @@ public class FeedOutputter {
         titleElement.setText(feed.getTitle());
         channelElement.addContent(titleElement);
         
-        Element linkElement = new Element("link");
-        linkElement.setText(feed.getLink().toString());
-        channelElement.addContent(linkElement);
+        URL linkURL = feed.getLink();
+        // TODO
+        if (linkURL != null) {
+            Element linkElement = new Element("link");
+            linkElement.setText(linkURL.toString());
+            channelElement.addContent(linkElement);
+        }
                 
         Element descElement = new Element("description");
         descElement.setText(feed.getDescribtion());

@@ -1,6 +1,6 @@
 /*
  * @(#)FeedItem.java
- * Time-stamp: "2008-11-28 23:39:17 anton"
+ * Time-stamp: "2008-11-30 01:50:01 anton"
  */
 
 abstract public class FeedItem {
@@ -48,5 +48,17 @@ abstract public class FeedItem {
     public String getInfoString() {
         return "Title: " + title + "\n"
             + "Description: " + description + "\n";
+    }
+    
+    @Override    
+    public boolean equals(Object obj) {
+        if (obj instanceof FeedItem) {
+            FeedItem compareItem = (FeedItem) obj;
+            // TODO NullPointerException?
+            return (this.title.equals(compareItem.getTitle())
+                    && this.description.equals(compareItem.getDescribtion()));
+        } else {
+            return false;
+        }
     }
 }

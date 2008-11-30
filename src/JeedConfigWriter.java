@@ -1,6 +1,6 @@
 /*
  * @(#)JeedConfigWriter.java
- * Time-stamp: "2008-11-27 23:06:25 anton"
+ * Time-stamp: "2008-11-29 17:46:54 anton"
  */
 
 import java.io.File;
@@ -36,8 +36,8 @@ public class JeedConfigWriter {
     }
 
     public String makeFileName(Feed feed) {
-        String result = feed.getLink().getHost();
-        result = result.replace('.', '-').toLowerCase();
+        String result = feed.getFeedLink().toString();
+        result = result.replaceAll("/|\\.|\\?|&|:", "-");
         result += "-feed.xml";
         return result;
     }

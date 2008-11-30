@@ -1,6 +1,6 @@
 /*
  * @(#)RssParser.java
- * Time-stamp: "2008-11-28 21:03:39 anton"
+ * Time-stamp: "2008-11-29 17:57:06 anton"
  */
 
 
@@ -37,15 +37,19 @@ public class RssParser implements FeedParser {
         
         // URL channelLink = FeedUtil.parseURL(channelElement.getChildTextTrim("link"));
         URL channelLink = null;
+        String urlString = channelElement.getChildTextTrim("link");
         try {
-            channelLink = new URL(channelElement.getChildTextTrim("link"));
+            if (urlString != null) {
+                logger.info("Url String : " + urlString);
+                channelLink = new URL(urlString);
+                rssFeed.setLink(channelLink);
+            }
         } catch (MalformedURLException e) {
-            //TODO - fix error message
-            e.printStackTrace();
+            //TODO - fix error message            
+            logger.warning("Malformed or missing url in link element, URL: "
+                           + urlString);
         }
 
-        rssFeed.setLink(channelLink);
-        
         String channelDescription
             = channelElement.getChildTextTrim("description");
         rssFeed.setDescribtion(channelDescription);
@@ -66,8 +70,8 @@ public class RssParser implements FeedParser {
         String desc = itemElement.getChildTextTrim("description");
         item.setDescribtion(desc);
         
-        String dateString = itemElement.getChildTextTrim("pubDate");
-        Date pubDate;
+        //         String dateString = itemElement.getChildTextTrim("pubDate");
+        //         Date pubDate;
         // TODO - verify dates on different formats
         //         try {
         //             //                         Mon, 17 Nov 2008 14:06:36 GMT
