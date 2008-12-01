@@ -1,11 +1,10 @@
 /*
  * @(#)JeedView.java
- * Time-stamp: "2008-11-30 18:39:44 anton"
+ * Time-stamp: "2008-12-01 01:16:29 anton"
  */
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observer;
 import java.util.Vector;
@@ -28,11 +27,12 @@ import javax.swing.border.Border;
 import javax.swing.event.ListSelectionListener;
 import java.util.Observable;
 import java.awt.FlowLayout;
-import javax.swing.SwingUtilities;
 import javax.swing.DefaultListModel;
+import java.awt.Dimension;
 
 public class JeedView extends JFrame implements Observer {    
     private static Logger logger = Logger.getLogger("jeedreader");
+    private Dimension frameDimension = new Dimension(800, 600);
     private static final int PAD_SIZE = 5;
     private static final Color BKGR_COLOR = Color.WHITE;
 
@@ -46,9 +46,19 @@ public class JeedView extends JFrame implements Observer {
     private DefaultListModel itemListModel;
     
     private JEditorPane itemView;
+    
+    // Buttons
     private JButton addFeedButton = new JButton("Add");
     private JButton updateFeedsButton = new JButton("Refresh");
-
+    
+    // MenuItems
+    private JMenuItem updateIntervallMenuItem;
+    private JMenuItem quitMenuItem;
+    
+    private JMenuItem updateFeedMenuItem;
+    private JMenuItem updateFeedsMenuItem;
+    private JMenuItem addFeedMenuItem;
+    
     public JeedView(JeedModel jeedModel) {
         super("JeedReader");
         this.jeedModel = jeedModel;
@@ -58,26 +68,34 @@ public class JeedView extends JFrame implements Observer {
 
         //Menu
         JMenuBar menubar = new JMenuBar();
-        JMenu file = new JMenu("File");
-        JMenu edit = new JMenu("Edit");
-
-        menubar.add(file);
-        menubar.add(edit);
-
-        JMenuItem fileQuit = new JMenuItem("Quit");
-        fileQuit.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println(e.paramString());
-                }
-            });
-        file.add(fileQuit);
+        
+        // Menu JeadReader
+        JMenu fileMenu = new JMenu("JeedReader");
+        this.updateIntervallMenuItem = new JMenuItem("Settings");
+        fileMenu.add(updateIntervallMenuItem);
+        this.quitMenuItem = new JMenuItem("Quit");
+        fileMenu.add(quitMenuItem);
+        
+        // Menu FeedMenu        
+        JMenu feedMenu = new JMenu("Feeds");
+        
+        this.updateFeedMenuItem = new JMenuItem("Update selected feed");
+        feedMenu.add(this.updateFeedMenuItem);
+        
+        this.updateFeedsMenuItem = new JMenuItem("Update all feeds");
+        feedMenu.add(this.updateFeedsMenuItem);
+        
+        this.addFeedMenuItem = new JMenuItem("Add feed");
+        feedMenu.add(this.addFeedMenuItem);
+        
+        // Add menus to menubar
+        menubar.add(fileMenu);
+        menubar.add(feedMenu);
 
         // FeedList
         this.feedListModel = new DefaultListModel();
         this.feedList = new JList(feedListModel);
-        
-        // TODO, if there are no feed?
-        feedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.feedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
         // FeedButtonPanel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -92,7 +110,7 @@ public class JeedView extends JFrame implements Observer {
         // ItemList
         this.itemListModel = new DefaultListModel();
         this.itemList = new JList(itemListModel);
-        itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //TODO itemList.setDragEnabled(true);
         JScrollPane itemsScrollPane =
             new JScrollPane(itemList,
@@ -100,6 +118,7 @@ public class JeedView extends JFrame implements Observer {
                             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         // ItemViewer
         this.itemView = new JEditorPane("text/html", "<h1>Nyheter</h1>");
+        this.itemView.setEditable(false);
         this.itemView.setBorder(paddingBorder);
         JScrollPane itemViewScrollPane =
             new JScrollPane(itemView,
@@ -127,27 +146,52 @@ public class JeedView extends JFrame implements Observer {
         this.getContentPane().add(panel);
     }
 
-    public void refreshFeeds() {
-        SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    logger.info(Thread.currentThread().toString());
-                    feedList.setListData(jeedModel.getFeeds());
-                }
-            });
+    public Feed getSelectedFeed() {
+        return (Feed) this.feedList.getSelectedValue();
     }
 
-    public String promtForFeedUrlString() {
+    //     public void refreshFeeds() {
+    //         SwingUtilities.invokeLater(new Runnable() {
+    //                 public void run() {
+    //                     logger.info(Thread.currentThread().toString());
+    //                     feedList.setListData(jeedModel.getFeeds());
+    //                 }
+    //             });
+    //     }
+    
+    public String promtForUpdateInterval(String errorMsg) {
+        String message = "Enter interval for feed updates in milliseconds: ";
         String result =
-            JOptionPane.showInputDialog(this, "Enter the URL to a feed: ");
+            JOptionPane.showInputDialog(this, errorMsg + message);
         return result;
+    }
+    
+    public String promtForFeedUrlString(String errorMsg) {
+        String result =
+            JOptionPane.showInputDialog(this, errorMsg + "Enter the URL to a feed: ");
+        return result;
+    }
+    
+    public void setProgramCloseListeners(ActionListener al) {
+        this.quitMenuItem.addActionListener(al);
+    }
+    
+    public void setUpdateIntervalListener(ActionListener al) {
+        this.updateIntervallMenuItem.addActionListener(al);
+    }
+
+    public void setUpdateFeedsListener(ActionListener al) {
+        this.updateFeedsButton.addActionListener(al);
+        this.updateFeedsMenuItem.addActionListener(al);
     }
 
     public void setUpdateFeedListener(ActionListener al) {
-        this.updateFeedsButton.addActionListener(al);
+        this.updateFeedMenuItem.addActionListener(al);
     }
     
     public void setAddFeedListener(ActionListener al) {
         this.addFeedButton.addActionListener(al);
+        this.addFeedMenuItem.addActionListener(al);
     }
 
     public void setFeedListListener(ListSelectionListener feedListListener) {
@@ -158,15 +202,15 @@ public class JeedView extends JFrame implements Observer {
         this.itemList.addListSelectionListener(listSelectionListener);
     }
     
-    public void showFeedInfoMessage() {
-        // TODO show info in feedList.
+    public void showErrorMessage(String errorMsg) {
+        JOptionPane.showMessageDialog(this, errorMsg, "alert", JOptionPane.ERROR_MESSAGE);
     }
 
     public void showItemsForCurrentFeedSelection() {
         if (feedList.isSelectionEmpty()) {
             return;
         }
-        Feed selectedFeed = (Feed) this.feedList.getSelectedValue();
+        Feed selectedFeed = getSelectedFeed();
         System.out.println(selectedFeed);
         FeedItem[] items = this.jeedModel.getItemsForFeed(selectedFeed);
         this.itemList.setListData(items);
@@ -179,6 +223,8 @@ public class JeedView extends JFrame implements Observer {
         FeedItem selectedFeedItem = (FeedItem) this.itemList.getSelectedValue();
         logger.info("Selected Feed: " + selectedFeedItem);
         System.out.println(selectedFeedItem);
+        // Should this behaviour be in the Controller?
+        selectedFeedItem.setIsRead(true);
         String description
             = this.jeedModel.getDescribtionFromFeedItem(selectedFeedItem);
         this.itemView.setText(description);
@@ -191,18 +237,26 @@ public class JeedView extends JFrame implements Observer {
             this.feedListModel.addElement(feed);
         }
         
-        this.feedList.setSelectedIndex(0);
+        // TODO what if there is no selection?
+        // this.feedList.setSelectedIndex(0);
         System.out.println("Feeds in gui: " + feeds);
 
         // Populate ItemList
         showItemsForCurrentFeedSelection();
+        this.setPreferredSize(this.frameDimension);
         this.pack();
         this.setVisible(true);
     }
 
     public void update(Observable obj, Object arg) {
         // TODO
-        logger.info("Change detected");
-        refreshFeeds();
+        if (arg instanceof Feed) {
+            logger.info("New feed detected");
+            this.feedListModel.addElement(arg);
+        } else if (arg.equals("newItems")) {
+            logger.info("New items detected");
+            showItemsForCurrentFeedSelection();
+            // TODO Assumtion about generic type, unchecked cast.
+        }
     }
 }

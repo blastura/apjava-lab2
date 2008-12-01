@@ -1,6 +1,6 @@
 /*
  * @(#)JeedModel.java
- * Time-stamp: "2008-11-30 18:27:30 anton"
+ * Time-stamp: "2008-12-01 01:10:07 anton"
  */
 
 import java.util.Vector;
@@ -9,6 +9,8 @@ import java.util.Observable;
 import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.IOException;
+import org.jdom.JDOMException;
 
 public class JeedModel extends Observable {
     private static Logger logger = Logger.getLogger("jeedreader");
@@ -21,51 +23,58 @@ public class JeedModel extends Observable {
     public void addFeed(Feed feed) {
         feeds.add(feed);
         setChanged();
-        notifyObservers();
+        notifyObservers(feed);
     }
 
-    public void updateFeeds() {
-        // TODO
-        boolean stateChanged = false;
-        for (Feed feed : feeds) {
-            URL feedLink = feed.getFeedLink();
-            Feed updateFeed = FeedUtil.makeFeed(feedLink);            
-            List<FeedItem> items = feed.getItems();
-            List<FeedItem> updateItems = updateFeed.getItems();
-            // List to store new items that only exist in updateItems.
-            List<FeedItem> newItems = new ArrayList<FeedItem>();
-            
-            // TODO, should check dates, and HttpHeader to reduce searchtime?
-            // O(n^2)
-            for (FeedItem updateItem: updateItems) {
-                boolean isOldItem = false;
-                for (FeedItem item : items) {
-                    if (item.equals(updateItem)) {
-                        // New item found
-                        isOldItem = true;
-                    }
-                }
-                if (!isOldItem || items.isEmpty()) {
-                    logger.info("New item found: " + updateItem
-                                + " in feed: " + feed);
-                    stateChanged = true;
-                    newItems.add(updateItem);
+    public boolean updateFeed(Feed feed) throws IOException, JDOMException {
+        boolean isChanged = false;
+
+        List<FeedItem> newItems = new ArrayList<FeedItem>();
+        URL feedLink = feed.getFeedLink();
+        Feed updateFeed = FeedUtil.makeFeed(feedLink);
+        List<FeedItem> items = feed.getItems();
+        List<FeedItem> updateItems = updateFeed.getItems();
+        // List to store new items that only exist in updateItems.
+
+        // TODO, should check dates, and HttpHeader to reduce searchtime?
+        // O(n^2)
+        for (FeedItem updateItem: updateItems) {
+            boolean isOldItem = false;
+            for (FeedItem item : items) {
+                if (item.equals(updateItem)) {
+                    // New item found
+                    isOldItem = true;
                 }
             }
-
-            // Add all new Items to current feed.
-            for (FeedItem newItem : newItems) {
-                feed.addItem(newItem);
+            if (!isOldItem || items.isEmpty()) {
+                logger.info("New item found: " + updateItem
+                            + " in feed: " + feed);
+                isChanged = true;
+                newItems.add(updateItem);
             }
         }
-        
+
+        // Add all new Items to current feed.
+        for (FeedItem newItem : newItems) {
+            feed.addItem(newItem);
+        }
+        return isChanged;
+    }
+
+    public void updateFeeds() throws IOException, JDOMException {
+        boolean stateChanged = false;
+        for (Feed feed : feeds) {
+            stateChanged = updateFeed(feed);
+        }
+
         // If new Items are found notify all Observers of this class.
         if (stateChanged) {
             setChanged();
-            notifyObservers();
+            // TODO constant newItems
+            notifyObservers("newItems");
         }
     }
-    
+
     // TODO is this the really neccesary?
     public FeedItem[] getItemsForFeed(Feed feed) {
         return feed.getItems().toArray(new FeedItem[0]);

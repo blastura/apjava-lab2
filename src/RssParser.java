@@ -1,6 +1,6 @@
 /*
  * @(#)RssParser.java
- * Time-stamp: "2008-11-29 17:57:06 anton"
+ * Time-stamp: "2008-12-01 01:32:10 anton"
  */
 
 
@@ -40,7 +40,7 @@ public class RssParser implements FeedParser {
         String urlString = channelElement.getChildTextTrim("link");
         try {
             if (urlString != null) {
-                logger.info("Url String : " + urlString);
+                logger.info("Channel link urlString : " + urlString);
                 channelLink = new URL(urlString);
                 rssFeed.setLink(channelLink);
             }
@@ -54,6 +54,7 @@ public class RssParser implements FeedParser {
             = channelElement.getChildTextTrim("description");
         rssFeed.setDescribtion(channelDescription);
         
+        @SuppressWarnings("unchecked") // JDOM doesn't support generics
         List<Element> itemElements = channelElement.getChildren("item");
         for (Element item : itemElements) {
             RssItem rssItem = new RssItem();

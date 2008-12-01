@@ -1,6 +1,6 @@
 /*
  * @(#)FeedUtil.java
- * Time-stamp: "2008-11-30 01:37:55 anton"
+ * Time-stamp: "2008-12-01 00:53:00 anton"
  */
 
 import java.io.File;
@@ -12,9 +12,31 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import java.net.MalformedURLException;
 import java.util.logging.Logger;
+import java.io.FilenameFilter;
 
 public class FeedUtil {
     private static Logger logger = Logger.getLogger("jeedreader");
+    
+    /**
+     * Returns an array containing all files in CONF_DIR which end with
+     * feed.xml, these files should contain saved feeds.
+     *
+     * @return An array with feed files.
+     */
+    public static File[] getFeedFiles() {
+        if (JeedReader.CONF_DIR.isDirectory()) {
+            File[] feedFiles
+                = JeedReader.CONF_DIR.listFiles(new FilenameFilter() {
+                    public boolean accept(File dir, String name) {
+                        return (JeedReader.CONF_DIR.equals(dir)
+                                && name.matches(".*feed.xml"));
+                    }
+                });
+            return feedFiles;
+        } else {
+            return null;
+        }
+    }
     
     public static Feed makeFeed(File file) {
         System.out.println("Path to file: "
@@ -37,38 +59,44 @@ public class FeedUtil {
         }
     }
     
-    public static Feed makeFeed(String urlString) throws MalformedURLException {
+    public static Feed makeFeed(String urlString) throws MalformedURLException,
+                                                         IOException,
+                                                         JDOMException {
         URL url = new URL(urlString);
         return makeFeed(url);
     }
 
-    public static Feed makeFeed(URL url) {
-        try {
-            Document doc = loadXml(url);
-            FeedParser feedParser = getFeedParser(doc);
-            Feed feed = feedParser.parse(doc);
-            feed.setFeedLink(url);
-            return feed;
-        } catch (IOException e) {
-            // TODO
-            System.err.println("Error with URL: " + url);
-            return null;
-        } catch (JDOMException e) {
-            // TODO
-            e.printStackTrace();
-            System.exit(-1);
-            return null;
-        }
+    /**
+     * Describe <code>makeFeed</code> method here.
+     *
+     * @param url The URL should point to a supported supped.
+     * @return The newly created feed.
+     * @exception IOException If the URL isn't pointing to an accessable
+     * resource.
+     * @exception JDOMException If the URL isn't pointing to a resource thats
+     * parsable by JDOM.
+     */
+    public static Feed makeFeed(URL url) throws IOException, JDOMException {
+        Document doc = loadXml(url);
+        FeedParser feedParser = getFeedParser(doc);
+        Feed feed = feedParser.parse(doc);
+        feed.setFeedLink(url);
+        return feed;
     }
     
-    public static FeedParser getFeedParser(Document doc) throws IOException,
-                                                                JDOMException {
+    public static FeedParser getFeedParser(Document doc)
+        throws IOException, JDOMException, IllegalArgumentException {
         Element rootElement = doc.getRootElement();
         String feedType = rootElement.getName();
         
         if (feedType.equalsIgnoreCase("rss")) {
             // TODO Rss versions
-            // String feedVersion = rootElement.getAttribute("version").getValue();
+            String feedVersion = rootElement.getAttribute("version").getValue();
+            if (!feedVersion.equals("2.0")) {
+                logger.warning("Rss version other than 2.0 detected");
+                throw new IllegalArgumentException("Rss versions other than "
+                                                   + "2.0 is not supported.");
+            }
             return new RssParser();
         } else if (feedType.equalsIgnoreCase("jss")) {
             return new JeedConfigParser();

@@ -1,6 +1,6 @@
 /*
  * @(#)JeedConfigWriter.java
- * Time-stamp: "2008-11-29 17:46:54 anton"
+ * Time-stamp: "2008-11-30 20:39:35 anton"
  */
 
 import java.io.File;
@@ -9,12 +9,19 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.List;
 
 public class JeedConfigWriter { 
     FeedOutputter feedOutputter;
     
     public JeedConfigWriter() {
         feedOutputter = new FeedOutputter();
+    }
+
+    public void saveFeeds(List<Feed> feeds) {
+        for (Feed feed : feeds) {
+            saveFeed(feed);
+        }
     }
 
     public void saveFeed(Feed feed) {

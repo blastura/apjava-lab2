@@ -3,6 +3,29 @@
 #+EMAIL:     anton.johansson@gmail.com
 #+DATE:      2008-11-18 Tue
 
+* To implement
+**  @SuppressWarnings("unchecked")
+  
+** Utseende:
+*** DONE Programmet ska använda menyer
+
+** Funktioner:
+*** DONE Det ska gå att lägga till flera feeds
+*** DONE Ett item är som standard markerad som oläst
+*** DONE När ett item markeras ska det visas och markeras som läst
+*** DONE Intervallet mellan uppdateringarna ska gå att ställa in
+*** DONE Uppdateringarna ska ske automatiskt i bakgrunden
+*** DONE Det ska gå att välja mellan vilka av de tillagda feeds som ska visas
+*** TODO Vid val av ny feed ska listan med items för denna uppdateras
+*** DONE Det ska gå att uppdatera varje feed manuellt
+*** DONE Alla inställningar ska sparas mellan körningar
+*** DONE Listan med alla feeds ska sparas mellan körningar
+
+** Saker ni inte behöver ta hand om:
+*** TODO Ni kan utgå från att datan är korrekt (men programmet bör inte kracha helt och hållet om något skulle vara galet)
+*** DONE Ni behöver inte visa formateringen i description (inte ta hand om HTML-taggarna)
+*** DONE Er version behöver bara klara av version 2.0, men bör säga till vid fel version
+
 * Class
   + RSSParser
   + RSSFeed
