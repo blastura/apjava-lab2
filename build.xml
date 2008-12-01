@@ -5,7 +5,7 @@
   
   <!-- Dir Properties -->
   <property name="build.dir" location="bin"/>
-  <property name="build.main.dir" location="${build.dir}/main"/>
+  <property name="build.main.dir" location="${build.dir}"/>
   <property name="build.test.dir" location="${build.dir}/test"/>
   <property name="doc.dir" location="doc"/>
   <property name="src.dir" location="src"/>
