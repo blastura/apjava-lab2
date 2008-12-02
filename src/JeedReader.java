@@ -1,6 +1,6 @@
 /*
  * @(#)JeedReader.java
- * Time-stamp: "2008-12-01 01:24:25 anton"
+ * Time-stamp: "2008-12-01 23:41:07 anton"
  */
 
 import java.awt.event.ActionEvent;
@@ -27,7 +27,6 @@ public class JeedReader implements Observer {
     
     private JeedModel jeedModel;
     private JeedView jeedView;
-    private JeedConfigWriter jeedWriter;
     
     /**
      * Creates Model and View for this application, parses stored Feeds and
@@ -36,16 +35,14 @@ public class JeedReader implements Observer {
     public JeedReader() {
         this.jeedModel = new JeedModel();
         this.jeedView = new JeedView(jeedModel);
-        this.jeedWriter = new JeedConfigWriter();
         
-        // TODO - Parse all feeds in CONF_DIR, add to JeedModel.
-        System.out.println("FeedfileNames: ");
+        // Parse and add all feeds, in CONF_DIR, to jeedModel
         File[] feedFiles = FeedUtil.getFeedFiles();
         for (File file : feedFiles) {
             logger.info(file.getName());
             Feed feed = FeedUtil.makeFeed(file);
             jeedModel.addFeed(feed);
-            jeedWriter.saveFeed(feed);
+            JeedConfigWriter.saveFeed(feed);
         }
         
         // Add Listeners
@@ -71,7 +68,7 @@ public class JeedReader implements Observer {
         this.startUpdateFeedByInterval();
         
         // Show View
-        jeedView.showView();
+        jeedView.initView();
     }
     
     private void tryUpdateFeeds() {
@@ -111,7 +108,7 @@ public class JeedReader implements Observer {
                         // Update all feeds
                         tryUpdateFeeds();
                         // Save all feeds
-                        jeedWriter.saveFeeds(jeedModel.getFeeds());
+                        JeedConfigWriter.saveFeeds(jeedModel.getFeeds());
                         // Wait for feedUpdateInterval milliseconds
                         try {
                             Thread.sleep(feedUpdateInterval);
@@ -157,7 +154,7 @@ public class JeedReader implements Observer {
                         Feed feed = FeedUtil.makeFeed(urlString);                
                         if (feed != null) {
                             jeedModel.addFeed(feed);
-                            jeedWriter.saveFeed(feed);
+                            JeedConfigWriter.saveFeed(feed);
                         }
                         // TODO handle nullpointer display error message
                     } catch (IllegalArgumentException e) {
@@ -247,14 +244,14 @@ public class JeedReader implements Observer {
     private class ClosingListener extends WindowAdapter implements ActionListener {
         public void actionPerformed(ActionEvent ae) {
             logger.info("Closing program");
-            jeedWriter.saveFeeds(jeedModel.getFeeds());
+            JeedConfigWriter.saveFeeds(jeedModel.getFeeds());
             System.exit(0);
         }
         
         @Override
         public void windowClosing(WindowEvent we) {
             logger.info("Window closeing");
-            jeedWriter.saveFeeds(jeedModel.getFeeds());
+            JeedConfigWriter.saveFeeds(jeedModel.getFeeds());
             System.exit(0);
         }
     }
@@ -264,7 +261,7 @@ public class JeedReader implements Observer {
         if (arg instanceof Feed) {
             logger.info("New feed detected");
             Feed feed = (Feed) arg;
-            jeedWriter.saveFeed(feed);
+            JeedConfigWriter.saveFeed(feed);
         }
     }
 

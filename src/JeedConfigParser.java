@@ -1,6 +1,6 @@
 /*
  * @(#)JeedConfigParser.java
- * Time-stamp: "2008-11-28 21:09:59 anton"
+ * Time-stamp: "2008-12-01 12:13:13 anton"
  */
 
 import org.jdom.Document;
@@ -9,12 +9,6 @@ import java.net.URL;
 import java.net.MalformedURLException;
 
 public class JeedConfigParser extends RssParser { 
-    // private Document doc;
-    
-    public JeedConfigParser() {
-    }
-    
-    
     @Override
     public RssFeed parse(Document doc) {
         RssFeed rssFeed = new RssFeed("jss");
@@ -51,5 +45,4 @@ public class JeedConfigParser extends RssParser {
         rssItem.setIsRead(isRead);
         super.parseItem(itemElement, rssItem);
     }
-
 }

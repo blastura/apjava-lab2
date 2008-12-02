@@ -1,22 +1,22 @@
 /*
  * @(#)FeedUtil.java
- * Time-stamp: "2008-12-01 00:53:00 anton"
+ * Time-stamp: "2008-12-01 11:57:24 anton"
  */
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Logger;
 import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.jdom.Element;
-import java.net.MalformedURLException;
-import java.util.logging.Logger;
-import java.io.FilenameFilter;
 
-public class FeedUtil {
+public final class FeedUtil {
     private static Logger logger = Logger.getLogger("jeedreader");
-    
+
     /**
      * Returns an array containing all files in CONF_DIR which end with
      * feed.xml, these files should contain saved feeds.
@@ -27,17 +27,17 @@ public class FeedUtil {
         if (JeedReader.CONF_DIR.isDirectory()) {
             File[] feedFiles
                 = JeedReader.CONF_DIR.listFiles(new FilenameFilter() {
-                    public boolean accept(File dir, String name) {
-                        return (JeedReader.CONF_DIR.equals(dir)
-                                && name.matches(".*feed.xml"));
-                    }
-                });
+                        public boolean accept(File dir, String name) {
+                            return (JeedReader.CONF_DIR.equals(dir)
+                                    && name.matches(".*feed.xml"));
+                        }
+                    });
             return feedFiles;
         } else {
             return null;
         }
     }
-    
+
     public static Feed makeFeed(File file) {
         System.out.println("Path to file: "
                            + file.getAbsolutePath());
@@ -58,7 +58,7 @@ public class FeedUtil {
             return null;
         }
     }
-    
+
     public static Feed makeFeed(String urlString) throws MalformedURLException,
                                                          IOException,
                                                          JDOMException {
@@ -83,12 +83,12 @@ public class FeedUtil {
         feed.setFeedLink(url);
         return feed;
     }
-    
-    public static FeedParser getFeedParser(Document doc)
+
+    private static FeedParser getFeedParser(Document doc)
         throws IOException, JDOMException, IllegalArgumentException {
         Element rootElement = doc.getRootElement();
         String feedType = rootElement.getName();
-        
+
         if (feedType.equalsIgnoreCase("rss")) {
             // TODO Rss versions
             String feedVersion = rootElement.getAttribute("version").getValue();
@@ -107,9 +107,9 @@ public class FeedUtil {
         }
     }
 
-    
+
     public static boolean isURL(String urlString) {
-            // TODO is this ok
+        // TODO is this ok
         try {
             new URL(urlString);
             return true;
@@ -119,7 +119,7 @@ public class FeedUtil {
             return false;
         }
     }
-    
+
     /**
      * TODO - add correct author or somehting
      * Laddar en XML-fil och returnerar ett DOM-dokument.
@@ -131,7 +131,7 @@ public class FeedUtil {
      *
      */
     private static Document loadXml(URL srcURL) throws IOException,
-                                                      JDOMException {
+                                                       JDOMException {
         SAXBuilder builder = new SAXBuilder();
         Document doc = builder.build(srcURL);
         return doc;
@@ -147,7 +147,8 @@ public class FeedUtil {
      * @throws JDOMException
      *
      */
-    private static Document loadXml(File srcFile) throws IOException, JDOMException {
+    private static Document loadXml(File srcFile) throws IOException,
+                                                         JDOMException {
         SAXBuilder builder = new SAXBuilder();
         Document doc = builder.build(srcFile);
         return doc;

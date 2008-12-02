@@ -1,6 +1,6 @@
 /*
  * @(#)JeedConfigWriter.java
- * Time-stamp: "2008-11-30 20:39:35 anton"
+ * Time-stamp: "2008-12-01 23:39:02 anton"
  */
 
 import java.io.File;
@@ -11,20 +11,14 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.List;
 
-public class JeedConfigWriter { 
-    FeedOutputter feedOutputter;
-    
-    public JeedConfigWriter() {
-        feedOutputter = new FeedOutputter();
-    }
-
-    public void saveFeeds(List<Feed> feeds) {
+public final class JeedConfigWriter { 
+    public static void saveFeeds(List<Feed> feeds) {
         for (Feed feed : feeds) {
             saveFeed(feed);
         }
     }
 
-    public void saveFeed(Feed feed) {
+    public static void saveFeed(Feed feed) {
         String fileName = makeFileName(feed);
         
         try {
@@ -32,7 +26,7 @@ public class JeedConfigWriter {
             
             Writer fileOut =
                 new OutputStreamWriter(new FileOutputStream(confFile), "UTF-8");
-            feedOutputter.output(feed, fileOut);
+            FeedOutputter.output(feed, fileOut);
         } catch (FileNotFoundException e) {
             // TODO
             e.printStackTrace();
@@ -42,7 +36,7 @@ public class JeedConfigWriter {
         }
     }
 
-    public String makeFileName(Feed feed) {
+    public static String makeFileName(Feed feed) {
         String result = feed.getFeedLink().toString();
         result = result.replaceAll("/|\\.|\\?|&|:", "-");
         result += "-feed.xml";

@@ -1,6 +1,6 @@
 /*
  * @(#)JeedView.java
- * Time-stamp: "2008-12-01 01:16:29 anton"
+ * Time-stamp: "2008-12-01 12:58:39 anton"
  */
 
 import java.awt.BorderLayout;
@@ -159,6 +159,8 @@ public class JeedView extends JFrame implements Observer {
     //             });
     //     }
     
+    /* Start promt methods ******************************/
+    
     public String promtForUpdateInterval(String errorMsg) {
         String message = "Enter interval for feed updates in milliseconds: ";
         String result =
@@ -171,6 +173,10 @@ public class JeedView extends JFrame implements Observer {
             JOptionPane.showInputDialog(this, errorMsg + "Enter the URL to a feed: ");
         return result;
     }
+    
+    /* End promt methods ******************************/
+    
+    /* Start Setup Listeners methods ******************************/
     
     public void setProgramCloseListeners(ActionListener al) {
         this.quitMenuItem.addActionListener(al);
@@ -202,6 +208,9 @@ public class JeedView extends JFrame implements Observer {
         this.itemList.addListSelectionListener(listSelectionListener);
     }
     
+    /* End Setup Listeners methods ******************************/
+
+    
     public void showErrorMessage(String errorMsg) {
         JOptionPane.showMessageDialog(this, errorMsg, "alert", JOptionPane.ERROR_MESSAGE);
     }
@@ -230,7 +239,7 @@ public class JeedView extends JFrame implements Observer {
         this.itemView.setText(description);
     }
 
-    public void showView() {
+    public void initView() {
         // Populate FeedList
         Vector<Feed> feeds = jeedModel.getFeeds();
         for (Feed feed : feeds) {

@@ -1,6 +1,6 @@
 /*
  * @(#)JeedModel.java
- * Time-stamp: "2008-12-01 01:10:07 anton"
+ * Time-stamp: "2008-12-01 12:27:25 anton"
  */
 
 import java.util.Vector;
@@ -58,6 +58,7 @@ public class JeedModel extends Observable {
         for (FeedItem newItem : newItems) {
             feed.addItem(newItem);
         }
+        // TODO Observers should be notified here instead of in updateFeeds
         return isChanged;
     }
 
@@ -70,7 +71,7 @@ public class JeedModel extends Observable {
         // If new Items are found notify all Observers of this class.
         if (stateChanged) {
             setChanged();
-            // TODO constant newItems
+            // TODO remove and use a constant instead of "newItems"
             notifyObservers("newItems");
         }
     }

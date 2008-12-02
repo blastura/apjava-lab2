@@ -1,11 +1,9 @@
 /*
  * @(#)FeedParser.java
- * Time-stamp: "2008-11-27 16:48:28 anton"
+ * Time-stamp: "2008-12-01 11:43:48 anton"
  * TODO - character encoding.
  */
 
-import org.jdom.*;
-
 public interface FeedParser {
-    public Feed parse(Document doc);
+    public Feed parse(org.jdom.Document doc);
 }

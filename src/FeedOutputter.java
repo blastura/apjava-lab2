@@ -1,23 +1,20 @@
 /*
  * @(#)FeedOutputter.java
- * Time-stamp: "2008-11-30 18:04:16 anton"
+ * Time-stamp: "2008-12-01 23:33:22 anton"
  */
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
+import java.net.URL;
 import java.util.List;
-import org.jdom.*;
+import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import java.io.OutputStream;
-import java.net.URL;
 
-public class FeedOutputter {
-    
-    public FeedOutputter() {
-    }
-    
-    public void output(Feed feed, OutputStream out) {
+public final class FeedOutputter {
+    public static void output(Feed feed, OutputStream out) {
         Document doc = makeDoc(feed);
         try {
             XMLOutputter outputter = new XMLOutputter();
@@ -29,7 +26,7 @@ public class FeedOutputter {
         }
     }
     
-     public void output(Feed feed, Writer out) {
+     public static void output(Feed feed, Writer out) {
         Document doc = makeDoc(feed);
         try {
             XMLOutputter outputter = new XMLOutputter();
@@ -41,7 +38,7 @@ public class FeedOutputter {
         }
     }
     
-    private Document makeDoc(Feed feed) {
+    private static Document makeDoc(Feed feed) {
         // Element rootElement = new Element(feed.getType());
         Element rootElement = new Element("jss");
 
