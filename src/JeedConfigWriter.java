@@ -1,6 +1,6 @@
 /*
  * @(#)JeedConfigWriter.java
- * Time-stamp: "2008-12-01 23:39:02 anton"
+ * Time-stamp: "2008-12-02 23:13:44 anton"
  */
 
 import java.io.File;
@@ -11,6 +11,12 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.List;
 
+/**
+ * JeedConfigWriter has methods to save a Feed and to create a filename for it.
+ *
+ * @author Anton Johansson, dit06ajn@cs.umu.se
+ * @version 1.0
+ */
 public final class JeedConfigWriter { 
     public static void saveFeeds(List<Feed> feeds) {
         for (Feed feed : feeds) {
@@ -18,6 +24,11 @@ public final class JeedConfigWriter {
         }
     }
 
+    /**
+     * Save the supplied Feed, in JeedReader.CONF_DIR, directory to disk.
+     *
+     * @param feed The Feed to save.
+     */
     public static void saveFeed(Feed feed) {
         String fileName = makeFileName(feed);
         
@@ -36,6 +47,13 @@ public final class JeedConfigWriter {
         }
     }
 
+    /**
+     * Create a filename for the supplied Feed. The FeedLink is used as a name,
+     * some characters are replaced to '-' and "feed.xml" is appended.
+     *
+     * @param feed The Feed to create a filename for.
+     * @return The newly created filename.
+     */
     public static String makeFileName(Feed feed) {
         String result = feed.getFeedLink().toString();
         result = result.replaceAll("/|\\.|\\?|&|:", "-");

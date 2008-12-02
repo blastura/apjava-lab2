@@ -81,6 +81,7 @@
 
   <target name="javadoc" description="Generaties javadoc">
     <javadoc destdir="${doc.dir}">
+      <classpath refid="project.classpath" />
       <fileset dir="${src.dir}/" includes="**/*.java"/>
     </javadoc>
   </target>

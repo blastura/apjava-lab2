@@ -167,6 +167,86 @@ främst är dessa klasser till hjälp för klassen \textit{JeedReader}.
   \end{center}
 \end{figure}
 
+\subsection{JeedReader.java}\label{JeedReader}
+Klassen \textit{JeedReader} är programmets huvudklass, med denna klass
+startas programmet. I \textit{Model-View-Controller}-modellen så
+motsvarar denna klass \textit{Controllern}, det vill säga klassen
+ansvarar för att bygga upp programmet och hantera användares
+handlingar. \textit{JeedReader}s konstruktor gör följande:
+
+\begin{itemize}
+\item Skapar en \textit{JeedModel} och skickar med denna instans till
+  konstruktorn i \textit{JeedView}.
+
+\item Flöden för alla filer, som fås av metoden
+  \textit{FeedUtil.getFeedFiles()}, se sektion \ref{getFeedFiles()},
+  skapas och läggs till i instansen av \textit{JeedModel}.
+
+\item Inre klasser som implementerar olika typer av
+  \textit{EventListener}s instansernas och fästs vid olika komponenter
+  i \textit{JeedView} genom ''set''-metoder i \textit{JeedView}.
+
+\item Klassen \textit{JeedView} läggs till som \textit{Observer} till
+  klassen \textit{JeedModel}. Detta för att kunna meddela
+  \textit{JeedView} varje gång något ändras i \textit{JeedModel} som
+  bör påverka det grafiska gränssnittet.
+
+\item Startar en tråd som uppdaterar alla flöden vid bestämt
+  intervall.
+  
+\item \textit{JeedView} visas för användaren.
+\end{itemize}
+
+Källkod finns i bilaga \ref{JeedReader.java}.
+
+\subsection{JeedView.java}\label{JeedView}
+Klassen \textit{JeedView} representerar programmets grafiska
+gränssnitt. Alla grafiska komponenter skapas och metoder för att visa
+upp dialog- och felrutor deklareras.
+
+Metoder för att fästa olika typer av \textit{EventListener}s vid
+specifika komponenter såsom knappar, listor och menykomponenter
+deklareras.
+
+Klassen implementerar gränssnittet \textit{Observer} för att kunna
+lyssna på uppdateringar som kommer från \textit{JeedModel}. Dessa
+uppdateringar fångas i metoden \textit{update(Observable obj, Object
+  arg)}. Första parametern till \textit{update} tar emot objekt, av
+typen \textit{Observable}, i detta program kommer detta objekt att
+vara programmets instans av \textit{JeedModel}. Andra parametern är
+ett valbart objekt som indikerar på vad som har ändrats i
+\textit{JeedModel}. % TODO hur
+
+Källkod finns i bilaga \ref{JeedView.java}.
+
+\subsection{JeedModel.java}\label{JeedModel}
+Klassen \textit{JeedModel} är en representation av programmets
+data. Här sparas alla flöden och metoder för att hämta, lägga till och
+ta bort flöden är implementerade. Klassen utökar
+\textit{java.util.Observable} och meddelar alla klasser som
+registrerat sig som intressenter för denna klass när ändringar i
+\textit{JeedModel}.
+
+Flöden som användare lägger till i programmet sparas i \textit{Feed}
+referenser, den bakomliggande implementationen är dock i denna
+implementation enbart av typen \textit{RssFeed}.
+
+% TODO ändringar per flöde, skicka med flödet som argument
+
+Källkod finns i bilaga \ref{JeedModel.java}.
+
+\subsection{JeedConfigParser.java}\label{JeedConfigParser}
+Klassen \textit{JeedConfigParser} utökar klassen \textit{RssParser}
+och överlagrar dess metoder \textit{parse(org.jdom.Document)} och
+\textit{parseItem(org.jdom.Element, RssItem)}. Denna utökade
+funktionalitet av \textit{RssParser} hanterar dokument som är sparade
+av själva programmet. Dessa dokument har en \textit{jss}-tag som root-element
+artiklar med ett attribut \textit{isRead}. Metoden
+\textit{parse(org.jdom.Document)} returnerar en instans av
+\textit{RssFeed}, se sektion \ref{RssFeed}.
+
+Källkod finns i bilaga \ref{JeedConfigParser.java}.
+
 \subsection{Feed.java}\label{Feed}
 Den abstrakta klassen \textit{Feed} implementerar alla funktioner som
 bör vara gemensamma för alla typer av flöden som ska kunna sparas i
@@ -195,13 +275,30 @@ lista.
 
 Källkod finns i bilaga \ref{FeedItem.java}.
 
+
+\subsection{JeedConfigWriter.java}\label{JeedConfigWriter}
+Klassen \textit{JeedConfigWriter} använder sig av klassen
+\textit{FeedOutputter}, för att spara en eller flera flöden som filer
+i katalogen som definieras av konstanten \textit{CONF\_DIR} i klassen
+\textit{JeedReader}. Filnamnen som sparas bestäms av flödenas
+\textit{URL}, och kommer därför alltid att bli unika för varje flöde.
+
+Källkod finns i bilaga \ref{JeedConfigWriter.java}.
+
 \subsection{FeedOutputter.java}\label{FeedOutputter}
 Klassen \textit{FeedOutputter} skriver ut flöden, \ref{Feed}, till
-antingen en \textit{java.io.OutputStream} eller en
-\textit{java.io.Writer}. I ett mellanled skapas tillfälligt en instans
-av typen \textit{org.jdom.Document}, det är informationen i detta
-objekt som sedan skrivs ut. I nuläget hämtas inte all information ur
-flödet, se begränsningar sektion \ref{Begransningar}.
+antingen en instans av \textit{java.io.OutputStream} eller en instans
+av \textit{java.io.Writer}. I ett mellanled skapas tillfälligt en
+instans av typen \textit{org.jdom.Document}, det är informationen i
+detta objekt som sedan skrivs ut. I nuläget hämtas inte all
+information ur flödet, se begränsningar sektion
+\ref{Begransningar}. % TODO
+
+När flödena sparas undan till disk ändras root-taggen från
+\textit{rss} till \textit{jss} och ett attribut, \textit{feedLink},
+sätts till flödets URL. Varje artikel i flödet får även ett attribut
+\textit{isRead} som skriver ut artikelns, \textit{FeedItem}, fält
+\textit{isRead}.
 
 Källkod finns i bilaga \ref{FeedOutputter.java}.
 
@@ -236,80 +333,131 @@ av \textit{JeedConfigParser}, se sektion \ref{JeedConfigParser}.
 
 Källkod finns i bilaga \ref{FeedUtil.java}.
 
-\subsection{JeedConfigParser.java}\label{JeedConfigParser}
-Klassen \textit{JeedConfigParser} utökar klassen \textit{RssParser}
-och överlagrar dess metoder \textit{parse(org.jdom.Document)} och
-\textit{parseItem(org.jdom.Element, RssItem)}. Denna utökade
-funktionalitet av \textit{RssParser} hanterar dokument som är sparade
-av själva programmet. Dessa dokument har en \textit{jss}-tag som root-element
-artiklar med ett attribut \textit{isRead}. Metoden
-\textit{parse(org.jdom.Document)} returnerar en instans av
-\textit{RssFeed}, se sektion \ref{RssFeed}.
-
-Källkod finns i bilaga \ref{JeedConfigParser.java}.
-
-\subsection{JeedConfigWriter.java}\label{JeedConfigWriter}
-Klassen \textit{JeedConfigWriter} använder sig av klassen
-\textit{FeedOutputter}, för att spara en eller flera flöden som en
-filer i katalogen som definieras av konstanten \textit{CONF\_DIR} i
-klassen \textit{JeedReader}. Filnamnen som sparas bestäms av flödenas
-\textit{URL}, och kommer därför alltid att bli unika för varje flöde.
-
-Källkod finns i bilaga \ref{JeedConfigWriter.java}.
-
-\subsection{JeedModel.java}\label{JeedModel}
-Klassen \textit{JeedModel} är en representation av programmets
-data. Här sparas alla flöden och metoder för att hämta, lägga till och
-ta bort flöden är implementerade. Klassen utökar
-\textit{java.util.Observable} och meddelar alla klasser som
-registrerat sig som intressenter för denna klass när ändringar i
-\textit{JeedModel}.
-% TODO ändringar per flöde, skicka med flödet som argument
-
-Källkod finns i bilaga \ref{JeedModel.java}.
-
-\subsection{JeedReader.java}\label{JeedReader}
-Klassen \textit{JeedReader} är programmets huvudklass, med denna klass
-startas programmet. I \textit{Model-View-Controller}-modellen så
-motsvarar denna klass \textit{Controller}, det vill säga klassen
-ansvarar för att bygga upp programmet och hantera användares
-handlingar.
-
-\textit{JeedReader}s konstruktor skapar en \textit{JeedModel} och
-skickar med denna instans till konstruktorn i \textit{JeedView}.
-
-Flöden för alla filer, som fås av metoden
-\textit{FeedUtil.getFeedFiles()}, se sektion \ref{getFeedFiles()},
-skapas och läggs till i instansen av \textit{JeedModel}.
-
-Inre klasser som implementerar olika typer av \textit{EventListener}s
-deklareras och fästs vid olika komponenter i \textit{JeedView} genom
-''set''-metoder i \textit{JeedView}.
-
-Källkod finns i bilaga \ref{JeedReader.java}.
-
-\subsection{JeedView.java}\label{JeedView}
-Källkod finns i bilaga \ref{JeedView.java}.
 \subsection{RssFeed.java}\label{RssFeed}
+Klassen \textit{RssFeed} utökar den abstrakta klassen
+\textit{Feed}. \textit{RssFeed} inför ytterligare fält, ''get''- och
+''set''-metoder som enbart gäller för flöden av typen RSS. I denna
+implementation är enbart version 2.0 av RSS accepterade, dock kan
+ytterligare funktionalitet implementeras i denna klass eller som
+underklasser till \textit{RssFeed} eller \textit{Feed}.
+
 Källkod finns i bilaga \ref{RssFeed.java}.
 \subsection{RssItem.java}\label{RssItem}
+Klassen \textit{RssItem} utökar den abstrakta klassen
+\textit{FeedItem}. Ytterligare fält och metoder kan implementeras i
+denna klass för att hantera ''RSS 2.0''-taggar.
+
 Källkod finns i bilaga \ref{RssItem.java}.
 \subsection{RssParser.java}\label{RssParser}
+Klassen \textit{RssParser} implementerar gränssnittet
+\textit{FeedParser}. Metoden \textit{parse(org.jdom.Document doc)}
+sköter tolkningen av dokumentet medskickat i parametern och returnerar
+en \textit{RssFeed}. Taggar ur specifikation för RSS 2.0 tolkas och
+sparas undan i en ny instans av \textit{RssFeed}.
+
 Källkod finns i bilaga \ref{RssParser.java}.
 \subsection{config}
+I katalogen \textit{config} sparas alla flöden undan av
+programmet. Flöden får filnamn bestående av länken till flödet och
+avslutas med \verb!feed.xml!.
 
 \section{Begränsningar}\label{Begransningar}
 % Vilka problem och begränsningar har din lösning av uppgiften? Hur
 % skulle de kunna rättas till?
+
+Programmet får ses som början av implementation av en fullt fungerande
+RSS-läsare. Hantering av artiklars alla godkända taggar är ej
+gjord. Enbart titel och beskrivning används och även där hade det
+behövts göras mer felkontroller för att vara säker på att de
+finns. Enligt specifikationen av RSS 2.0 krävs antingen en titel eller
+beskrivning. Programmet förutsätter i nuläget att båda finns i
+flödet. Detta går lätt att ändra på i klassen \textit{RssParser} och
+\textit{RssItem}, alternativt \textit{FeedItem} om man vill att detta
+beteende ska gälla för alla typer flöden programmet ska hantera.
+
+Även i det grafiska gränssnittet finns det mycket som går att
+förbättra. Visningen av nya artiklar fungerar ej bra, när ett flöde är
+uppdaterat med en ny artikel syns inte detta per automatik för
+användare. Först när användaren markerat ett annat flöde och sedan går
+tillbaka till det ursprungliga uppdaterade flödet syns alla nyheter.
+
+Klasserna \textit{JeedConfigWriter} och \textit{FeedOutputter} borde
+kanske slås ihop till en klass.
+
+När nya flöden läggs till i programmet så hämtas och tolkas detta
+direkt. En bieffekt av denna implementation är att det inte går att
+lägga till flöden utan kontakt mot internet.
+
+Eventuella felmeddelanden som användaren bör få reda på visas i
+nuläget upp av en dialogruta med ett felmeddelande, detta kan upplevas
+störande och inte alltid relevant. Till exempel kommer denna ruta upp
+varje gång programmet försöker uppdatera ett flöde och kontakt inte
+kan fås mot ursprungsresursen på internet. Vissa felmeddelanden och
+andra informationsmeddelanden skulle kunna implementeras och visas på
+mindre störande sätt.
+
+Varken flöden eller artiklar kan tas bort via det grafiska
+gränssnittet.
+
+Det behövs någon typ av indikator på att programmet uppdaterar
+flöden...
+
+Borde skapat en separat JssFeed-klass istället för att låta RssFeed ta
+emot en Sträng som anger typ i konstruktorn.
+
+
 
 \section{Reflektioner}\label{Reflektioner}
 % Var det något som var speciellt krångligt? Vilka problem uppstod och
 % hur löste ni dem? Allmänna synpunkter. Hur skulle man kunna använda
 % dessa metoder i andra mer omfattande system?
 
+Klasser med enbart statiska metoder jämfört vanliga klasser och
+metoder, exempelvis skulle metoderna FeedParsers kunna vara statiska,
+de ändrar enbart värden som de fått in som parametrar.
+
+Trådar och uppdatering av grafiskt gränssnitt. ItemList.
+
 \section{Testkörningar}\label{Testkorningar}
 % Noggranna testkörningar där man ser att programmet fungerar som det
 % ska.
+
+Nedan avsnitt beskriver några olika scenarion för programmet.
+
+\subsection{Lägga till flöde}
+När användaren valt att lägga till ett nytt flöde kommer
+Popop-dialogruta, se figur \ref{fig:add-feed}.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=110mm]{images/add-feed.png}
+    \caption{}
+    \label{fig:add-feed}
+  \end{center}
+\end{figure}
+
+Fyller användaren i en textsträng som inte uppfyller kraven för en
+URL, kommer dialogruta i figur \ref{fig:malformed-url} visas. Det
+finns även andra typer av felmeddelanden som återspeglar felaktiga
+flöden. Exempel på detta är om användaren fyller i en URL som inte
+pekar på ett RSS flöde av version 2.0, då visas felmeddelande:
+
+\verb!Rss versions other than 2.0 is not supported.!.
+
+Pekar inskriven URL inte på någon resurs alls fås felmeddelandet:
+
+\verb!Resource not found.!
+
+Detta är även fallet om det inte finns någon anslutning till
+internet.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=110mm]{images/malformed-url.png}
+    \caption{}
+    \label{fig:malformed-url}
+  \end{center}
+\end{figure}
 
 \section{Diskussion}\label{Diskussion}
 % Hur fungerade det att följa en kodkonvention? Vilka var fördelarna

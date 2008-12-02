@@ -1,6 +1,6 @@
 /*
  * @(#)FeedOutputter.java
- * Time-stamp: "2008-12-01 23:33:22 anton"
+ * Time-stamp: "2008-12-02 23:46:49 anton"
  */
 
 import java.io.IOException;
@@ -13,7 +13,22 @@ import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+/**
+ * FeedOutputter has static methods to output feeds. And a private method to
+ * make a feed from an org.jdom.Document instance.
+ *
+ * @author Anton Johansson, dit06ajn@cs.umu.se
+ * @version 1.0
+ */
 public final class FeedOutputter {
+    
+    /**
+     * Converts the supplied Feed to an org.jdom.Document and prints it on the
+     * supplied OutputStream.
+     *
+     * @param feed The Feed to output.
+     * @param out The OutputStream to print the Feed on.
+     */
     public static void output(Feed feed, OutputStream out) {
         Document doc = makeDoc(feed);
         try {
@@ -26,7 +41,14 @@ public final class FeedOutputter {
         }
     }
     
-     public static void output(Feed feed, Writer out) {
+    /**
+     * Converts the supplied Feed to an org.jdom.Document and prints it to the
+     * supplied Writer.
+     *
+     * @param feed The Feed to output.
+     * @param out The Writer to print the Feed to.
+     */
+    public static void output(Feed feed, Writer out) {
         Document doc = makeDoc(feed);
         try {
             XMLOutputter outputter = new XMLOutputter();
@@ -38,6 +60,17 @@ public final class FeedOutputter {
         }
     }
     
+    /**
+     * Converts the supplied instance of Feed to an org.jdom.Document. The
+     * root-element of the Document will be named "jss", these Feeds are used to
+     * store application Feeds to disk.
+     *
+     * TODO - Not all fields in FeedItem and Feed are used. This should
+     * be changed in future versions.
+     *
+     * @param feed The Feed to make a new Document from.
+     * @return The newly created Document.
+     */
     private static Document makeDoc(Feed feed) {
         // Element rootElement = new Element(feed.getType());
         Element rootElement = new Element("jss");
@@ -46,7 +79,7 @@ public final class FeedOutputter {
         // TODO - Not for atom, only namespaces?
         rootElement.setAttribute("version", feed.getVersion());
         
-        // TODO - only for jss feeds, but thats all I'm writing?
+        // TODO - only for jss feeds, but that's all I'm writing?
         rootElement.setAttribute("feedLink", feed.getFeedLink().toString());
         
         // Channel
@@ -59,7 +92,6 @@ public final class FeedOutputter {
         channelElement.addContent(titleElement);
         
         URL linkURL = feed.getLink();
-        // TODO
         if (linkURL != null) {
             Element linkElement = new Element("link");
             linkElement.setText(linkURL.toString());
@@ -87,9 +119,16 @@ public final class FeedOutputter {
             Element itemDescElement = new Element("description");
             itemDescElement.setText(item.getDescribtion());
             itemElement.addContent(itemDescElement);
+            
+            
+            URL itemUrl = item.getUrl();
+            if (linkURL != null) {
+                Element itemLinkElement = new Element("link");
+                itemLinkElement.setText(itemUrl.toString());
+                itemElement.addContent(itemLinkElement);
+            }
         }
-        
-        // Create doc
+        // Create and return a Document
         return new Document(rootElement);
     }
 }

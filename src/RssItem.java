@@ -1,6 +1,6 @@
 /*
  * @(#)RssItem.java
- * Time-stamp: "2008-11-28 23:49:27 anton"
+ * Time-stamp: "2008-12-02 09:02:49 anton"
  */
 
 import java.util.Date;
@@ -37,8 +37,12 @@ public class RssItem extends FeedItem {
     }
 
     @Override
-    public String getInfoString() {
-        return super.toString() + "\n"
-            + "PubDate: " + pubDate + "\n";
+    public String getHtmlDescription() {
+        String htmlString ="";
+        if (this.pubDate != null) {
+            htmlString += "<p>" + pubDate + "</p>";
+        }
+        return super.getHtmlDescription() + "\n"
+            + htmlString;
     }
 }

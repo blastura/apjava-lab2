@@ -1,6 +1,6 @@
 /*
  * @(#)FeedUtil.java
- * Time-stamp: "2008-12-01 11:57:24 anton"
+ * Time-stamp: "2008-12-03 00:12:19 anton"
  */
 
 import java.io.File;
@@ -14,6 +14,12 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+/**
+ * FeedUtil provides static methods to be used by the JeedReader application.
+ *
+ * @author Anton Johansson, dit06ajn@cs.umu.se
+ * @version 1.0
+ */
 public final class FeedUtil {
     private static Logger logger = Logger.getLogger("jeedreader");
 
@@ -38,7 +44,15 @@ public final class FeedUtil {
         }
     }
 
-    public static Feed makeFeed(File file) {
+    /**
+     * Creates a Feed from the supplied File.
+     *
+     * @param file The File to create a new Feed from.
+     * @return a <code>Feed</code> value
+     * @exception IllegalArgumentException If the supplied Document is not of
+     * type RSS 2.0. TODO - Should use validation instead.
+     */
+    public static Feed makeFeed(File file) throws IllegalArgumentException {
         System.out.println("Path to file: "
                            + file.getAbsolutePath());
         try {
@@ -59,24 +73,44 @@ public final class FeedUtil {
         }
     }
 
+    /**
+     * Makes an URL of this supplied string and creates a Feed it.
+     *
+     * @param urlString An URL String locationg a Syndication Feed.
+     * @return A newly created Feed.
+     * @exception MalformedURLException Thrown to indicate that a malformed URL
+     * has occurred. Either no legal protocol could be found in a specification
+     * string or the string could not be parsed.
+     * @exception IOException If the URL isn't pointing to an accessable
+     * resource.
+     * @exception JDOMException If the URL isn't pointing to a resource thats
+     * parsable by JDOM.
+     * @exception IllegalArgumentException If the supplied Document is not of
+     * type RSS 2.0. TODO - Should use validation instead.
+     */
     public static Feed makeFeed(String urlString) throws MalformedURLException,
                                                          IOException,
-                                                         JDOMException {
+                                                         JDOMException,
+                                                         IllegalArgumentException {
         URL url = new URL(urlString);
         return makeFeed(url);
     }
 
     /**
-     * Describe <code>makeFeed</code> method here.
+     * Creates a Feed from the supplied URL.
      *
-     * @param url The URL should point to a supported supped.
-     * @return The newly created feed.
+     * @param url The URL should point to a supported Syndication Feed type.
+     * @return A newly created Feed.
      * @exception IOException If the URL isn't pointing to an accessable
      * resource.
      * @exception JDOMException If the URL isn't pointing to a resource thats
      * parsable by JDOM.
+     * @exception IllegalArgumentException If the supplied Document is not of
+     * type RSS 2.0. TODO - Should use validation instead.
      */
-    public static Feed makeFeed(URL url) throws IOException, JDOMException {
+    public static Feed makeFeed(URL url) throws IOException,
+                                                JDOMException,
+                                                IllegalArgumentException {
         Document doc = loadXml(url);
         FeedParser feedParser = getFeedParser(doc);
         Feed feed = feedParser.parse(doc);
@@ -84,8 +118,17 @@ public final class FeedUtil {
         return feed;
     }
 
+    /**
+     * Creates and returns a suitable implementation of FeedParser, depending on
+     * the supplied Document.
+     *
+     * @param doc The document to get a suitable FeedParser for.
+     * @return A newly created FeedParser.
+     * @exception IllegalArgumentException If the supplied Document is not of
+     * type RSS 2.0. TODO - Should use validation instead.
+     */
     private static FeedParser getFeedParser(Document doc)
-        throws IOException, JDOMException, IllegalArgumentException {
+        throws IllegalArgumentException {
         Element rootElement = doc.getRootElement();
         String feedType = rootElement.getName();
 
@@ -107,18 +150,6 @@ public final class FeedUtil {
         }
     }
 
-
-    public static boolean isURL(String urlString) {
-        // TODO is this ok
-        try {
-            new URL(urlString);
-            return true;
-        } catch (MalformedURLException e) {
-            logger.warning("MalformedURLException from "
-                           + "urlString: " + urlString);
-            return false;
-        }
-    }
 
     /**
      * TODO - add correct author or somehting

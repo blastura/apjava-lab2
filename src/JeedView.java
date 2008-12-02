@@ -1,15 +1,20 @@
 /*
  * @(#)JeedView.java
- * Time-stamp: "2008-12-01 12:58:39 anton"
+ * Time-stamp: "2008-12-03 00:31:24 anton"
  */
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -23,46 +28,61 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionListener;
-import java.util.Observable;
-import java.awt.FlowLayout;
-import javax.swing.DefaultListModel;
-import java.awt.Dimension;
 
+
+/**
+ * JeedView is the GUI of the application. It directly extends JFrame and
+ * implements Observer to listen for changes in JeedModel.
+ *
+ * @author Anton Johansson, dit06ajn@cs.umu.se
+ * @version 1.0
+ */
 public class JeedView extends JFrame implements Observer {    
     private static Logger logger = Logger.getLogger("jeedreader");
+    
     private Dimension frameDimension = new Dimension(800, 600);
     private static final int PAD_SIZE = 5;
     private static final Color BKGR_COLOR = Color.WHITE;
-
-    private JeedModel jeedModel;
     private Border paddingBorder;
+
+    // An instance of the applications JeedModel
+    private JeedModel jeedModel;
     
+    // Feed- Itemlist
     private JList feedList;
     private DefaultListModel feedListModel;
-    
     private JList itemList;
-    private DefaultListModel itemListModel;
     
+    // A pane to display item content.
     private JEditorPane itemView;
     
     // Buttons
     private JButton addFeedButton = new JButton("Add");
     private JButton updateFeedsButton = new JButton("Refresh");
     
-    // MenuItems
+    // JeedReader MenuItems
     private JMenuItem updateIntervallMenuItem;
     private JMenuItem quitMenuItem;
     
+    // Feeds MenuItems
     private JMenuItem updateFeedMenuItem;
     private JMenuItem updateFeedsMenuItem;
     private JMenuItem addFeedMenuItem;
     
+    /**
+     * Sets up every component of the GUI.
+     *
+     * @param jeedModel An instance of the applications JeedModel used to get
+     * feeds and items.
+     */
     public JeedView(JeedModel jeedModel) {
         super("JeedReader");
         this.jeedModel = jeedModel;
-        //FeedBorder borders TODO
+        
+        // A border to get some padding around elements in the GUI.
         this.paddingBorder
             = BorderFactory.createLineBorder(BKGR_COLOR, PAD_SIZE);
 
@@ -108,8 +128,7 @@ public class JeedView extends JFrame implements Observer {
         feedPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         // ItemList
-        this.itemListModel = new DefaultListModel();
-        this.itemList = new JList(itemListModel);
+        this.itemList = new JList();
         this.itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //TODO itemList.setDragEnabled(true);
         JScrollPane itemsScrollPane =
@@ -146,21 +165,26 @@ public class JeedView extends JFrame implements Observer {
         this.getContentPane().add(panel);
     }
 
+    /**
+     * A method used by JeedReader to get the currently selected feed.
+     *
+     * @return the selected Feed.
+     */
     public Feed getSelectedFeed() {
         return (Feed) this.feedList.getSelectedValue();
     }
 
-    //     public void refreshFeeds() {
-    //         SwingUtilities.invokeLater(new Runnable() {
-    //                 public void run() {
-    //                     logger.info(Thread.currentThread().toString());
-    //                     feedList.setListData(jeedModel.getFeeds());
-    //                 }
-    //             });
-    //     }
+    /* Promt methods ******************************/
+    // TODO - could be implemented in one more general method with one extra
+    // parameter.
     
-    /* Start promt methods ******************************/
-    
+    /**
+     * Displays an JOptionPane to promt the user for a new update interval.
+     *
+     * @param errorMsg An error message to be displayed if last call to this
+     * method failed.
+     * @return The String supplied by the user.
+     */
     public String promtForUpdateInterval(String errorMsg) {
         String message = "Enter interval for feed updates in milliseconds: ";
         String result =
@@ -168,63 +192,131 @@ public class JeedView extends JFrame implements Observer {
         return result;
     }
     
+    /**
+     * Displays an JOptionPane to promt the user for a new feed to add.
+     *
+     * @param errorMsg An error message to be displayed if last call to this
+     * method failed.
+     * @return The String supplied by the user.
+     */
     public String promtForFeedUrlString(String errorMsg) {
         String result =
             JOptionPane.showInputDialog(this, errorMsg + "Enter the URL to a feed: ");
         return result;
     }
     
-    /* End promt methods ******************************/
     
-    /* Start Setup Listeners methods ******************************/
+    /* Setup Listeners methods ******************************/
     
+    /**
+     * Attaches an ActionListener to quitMenuItem.
+     *
+     * @param al The ActionListener to attach.
+     */
     public void setProgramCloseListeners(ActionListener al) {
         this.quitMenuItem.addActionListener(al);
     }
     
+    /**
+     * Attaches an ActionListener to updateIntervallMenuItem.
+     *
+     * @param al The ActionListener to attach.
+     */
     public void setUpdateIntervalListener(ActionListener al) {
         this.updateIntervallMenuItem.addActionListener(al);
     }
 
+    /**
+     * Attaches an ActionListener to updateFeedsButton and updateFeedsMenuItem.
+     *
+     * @param al The ActionListener to attach.
+     */
     public void setUpdateFeedsListener(ActionListener al) {
         this.updateFeedsButton.addActionListener(al);
         this.updateFeedsMenuItem.addActionListener(al);
     }
 
+    /**
+     * Attaches an ActionListener to updateFeedsMenuItem.
+     *
+     * @param al The ActionListener to attach.
+     */
     public void setUpdateFeedListener(ActionListener al) {
         this.updateFeedMenuItem.addActionListener(al);
     }
     
+    /**
+     * Attaches an ActionListener to addFeedButton and addFeedMenuItem.
+     *
+     * @param al The ActionListener to attach.
+     */
     public void setAddFeedListener(ActionListener al) {
         this.addFeedButton.addActionListener(al);
         this.addFeedMenuItem.addActionListener(al);
     }
 
+    /**
+     * Attaches an ListSelectionListener to feedList.
+     *
+     * @param feedListListener The ListSelectionListener to attach.
+     */
     public void setFeedListListener(ListSelectionListener feedListListener) {
         this.feedList.addListSelectionListener(feedListListener);
     }
 
+    /**
+     * Attaches an ListSelectionListener to itemList.
+     *
+     * @param listSelectionListener The ListSelectionListener to attach.
+     */
     public void setItemListListener(ListSelectionListener listSelectionListener) {
         this.itemList.addListSelectionListener(listSelectionListener);
     }
     
-    /* End Setup Listeners methods ******************************/
-
     
+    /* Methods to display OptionPanes ******************************/
+    
+    /**
+     * Displays an JOptionPane to to display an error message if something has
+     * gone wrong and the user needs to know about it.
+     *
+     * @param errorMsg An error message to be displayed.
+     */
     public void showErrorMessage(String errorMsg) {
         JOptionPane.showMessageDialog(this, errorMsg, "alert", JOptionPane.ERROR_MESSAGE);
     }
-
+    
+    
+    /* Methods to dispay Feeds and FeedItems ******************************/
+    
+    /**
+     * Shows all items for the currently selected feed in the Jlist itemList.
+     *
+     */
     public void showItemsForCurrentFeedSelection() {
+        logger.info("Adding items, thread is: "
+                    + Thread.currentThread().toString());
         if (feedList.isSelectionEmpty()) {
+            logger.warning("No feed selected");
             return;
         }
+        
         Feed selectedFeed = getSelectedFeed();
         System.out.println(selectedFeed);
         FeedItem[] items = this.jeedModel.getItemsForFeed(selectedFeed);
+
         this.itemList.setListData(items);
+        // TODO - There seems to be problems when updating feeds, the new items
+        // won't display directly.
+        this.itemList.updateUI();
+        this.itemList.validate();
     }
 
+    /**
+     * Shows the html description from the currently selected item. The
+     * description is displayed in the JEditorPane itemView.
+     *
+     */
     public void showDescForCurrentItemSelection() {
         if (itemList.isSelectionEmpty()) {
             return;
@@ -235,10 +327,15 @@ public class JeedView extends JFrame implements Observer {
         // Should this behaviour be in the Controller?
         selectedFeedItem.setIsRead(true);
         String description
-            = this.jeedModel.getDescribtionFromFeedItem(selectedFeedItem);
+            = selectedFeedItem.getHtmlDescription();
         this.itemView.setText(description);
     }
-
+    
+    /* Init and update methods **************************************/    
+    
+    /**
+     * Fill the Feed JList, the FeedItem JList, and make this JFrame visible.
+     */
     public void initView() {
         // Populate FeedList
         Vector<Feed> feeds = jeedModel.getFeeds();
@@ -248,24 +345,48 @@ public class JeedView extends JFrame implements Observer {
         
         // TODO what if there is no selection?
         // this.feedList.setSelectedIndex(0);
-        System.out.println("Feeds in gui: " + feeds);
+        System.out.println("Feeds in GUI: " + feeds);
 
         // Populate ItemList
         showItemsForCurrentFeedSelection();
+        
+        // Prepare and show JFrame
         this.setPreferredSize(this.frameDimension);
         this.pack();
         this.setVisible(true);
     }
 
-    public void update(Observable obj, Object arg) {
-        // TODO
-        if (arg instanceof Feed) {
-            logger.info("New feed detected");
-            this.feedListModel.addElement(arg);
-        } else if (arg.equals("newItems")) {
-            logger.info("New items detected");
-            showItemsForCurrentFeedSelection();
-            // TODO Assumtion about generic type, unchecked cast.
+    /**
+     * Is run when JeedModel is changed. Update this Feed- and Item-lists.
+     *
+     * @param obj A reference to the Observable invoking this call.
+     * @param arg An object indicating what is changed, this will either be a
+     * Feed or a String "newItems".
+     */
+    public void update(final Observable obj, final Object arg) {
+        // TODO detect and display new items better.
+        logger.info("Update(...) JeedView Thread is: "
+                    + Thread.currentThread().toString());
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                    public void run() {
+                        if (arg instanceof Feed) {
+                            logger.info("New feed detected");
+                            feedListModel.addElement(arg);
+                            // TODO replace "newItems"" with constant, or change
+                            // behavior to use a feed instead.
+                        } else if (arg.equals("newItems")) {
+                            logger.info("New items detected");
+                            showItemsForCurrentFeedSelection();
+                        }
+                    }
+                });
+        } catch (InterruptedException e) {
+            // TODO - fix error message
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO - fix error message
+            e.printStackTrace();
         }
     }
 }
