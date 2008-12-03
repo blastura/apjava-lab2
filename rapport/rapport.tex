@@ -1,4 +1,4 @@
-\documentclass[a4paper, 12pt]{article}
+\documentclass[titlepage, twoside, a4paper, 12pt]{article}
 \usepackage[swedish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{verbatim}
@@ -9,6 +9,12 @@
 \usepackage[final]{pdfpages}
 % Place figures where they should be
 \usepackage{float}
+
+% Float for text
+\floatstyle{ruled}
+\newfloat{program}{thp}{lop}
+\floatname{program}{RSSxml}
+
 
 % vars
 \def\title{RSS}
@@ -73,7 +79,7 @@
 \rfoot{}
 
 \tableofcontents
-\newpage
+\cleardoublepage
 
 \rfoot{\thepage}
 \pagenumbering{arabic}
@@ -82,10 +88,10 @@
 % Beskriv med egna ord vad uppgiften gick ut på. Är det någonting som
 % varit oklart och ni gjort egna tolkningar så beskriv dessa.
 Denna laboration gick ut på att skriva en RSS-läsare med grafiskt
-användargränssnitt i programmeringsspråket Java. RSS står för Really
-Simple Syndication och är ett filformat som används för att på ett
-standardiserat sätt spara undan information i en lista. Oftast består
-denna information av något typ av artikel.
+användar\-gränssnitt i programmerings\-språket Java. RSS står för
+Really Simple Syndication och är ett filformat som används för att på
+ett standardiserat sätt spara undan information i en lista. Oftast
+består denna information av något typ av artikel.
 
 En RSS-läsare fungerar ungefär som en mailklient, det vill säga
 användare kan välja att prenumerera på valda RSS-flöden. Läsaren visar
@@ -126,7 +132,7 @@ gränssnittet att se ut ungefär som i figur \ref{fig:gui-out}.
 \begin{figure}[H]
   \begin{center}
     \includegraphics[width=110mm]{images/gui-out.png}
-    \caption{Användargränssnitt}
+    \caption{Användargränssnitt.}
     \label{fig:gui-out}
   \end{center}
 \end{figure}
@@ -141,9 +147,10 @@ till nya flöden via knappen \textit{Add} eller via menyn
 \textit{Feeds/Add feed}.
 
 För att uppdatera alla flöden används knappen \textit{Refresh} eller
-menyvalet \textit{Feeds/Update~all~feeds}. För att enbart uppdatera
-markerat flöde används menyvalet \textit{Feeds/Update~selected~feed},
-varje flöde uppdateras även varje gång de markeras i listan.
+menyvalet \textit{Feeds} och sedan \texttt{Update~all~feeds}. För att
+enbart uppdatera markerat flöde används menyvalet
+\textit{Feeds/Update~selected~feed}, varje flöde uppdateras även varje
+gång de markeras i listan.
 
 Källkoden ligger i underkatalogen \verb!src!.
 
@@ -162,7 +169,7 @@ främst är dessa klasser till hjälp för klassen \textit{JeedReader}.
 \begin{figure}[H]
   \begin{center}
     \makebox[0cm]{\includegraphics[width=230mm,angle=90]{images/classUML.pdf}}
-    \caption{}
+    \caption{Klassdiagram.}
     \label{fig:classUML}
   \end{center}
 \end{figure}
@@ -405,8 +412,6 @@ flöden...
 Borde skapat en separat JssFeed-klass istället för att låta RssFeed ta
 emot en Sträng som anger typ i konstruktorn.
 
-
-
 \section{Reflektioner}\label{Reflektioner}
 % Var det något som var speciellt krångligt? Vilka problem uppstod och
 % hur löste ni dem? Allmänna synpunkter. Hur skulle man kunna använda
@@ -418,11 +423,17 @@ de ändrar enbart värden som de fått in som parametrar.
 
 Trådar och uppdatering av grafiskt gränssnitt. ItemList.
 
+Programmet måste starta från samma katalog som klassfilerna ligger i
+för att få rätt relativa sökväg till konfigurationskatalogen
+\textit{config}. Brukar detta vara ett krav eller finns det något
+annat sätt att referera relativa sökvägar? Genom
+java.lang.Class.getResource(String name)?
+
 \section{Testkörningar}\label{Testkorningar}
 % Noggranna testkörningar där man ser att programmet fungerar som det
 % ska.
 
-Nedan avsnitt beskriver några olika scenarion för programmet.
+Följande avsnitt beskriver några olika scenarion för programmet.
 
 \subsection{Lägga till flöde}
 När användaren valt att lägga till ett nytt flöde kommer
@@ -431,7 +442,7 @@ Popop-dialogruta, se figur \ref{fig:add-feed}.
 \begin{figure}[H]
   \begin{center}
     \includegraphics[width=110mm]{images/add-feed.png}
-    \caption{}
+    \caption{Lägga till flöde.}
     \label{fig:add-feed}
   \end{center}
 \end{figure}
@@ -454,10 +465,147 @@ internet.
 \begin{figure}[H]
   \begin{center}
     \includegraphics[width=110mm]{images/malformed-url.png}
-    \caption{}
+    \caption{Felformaterad URL.}
     \label{fig:malformed-url}
   \end{center}
 \end{figure}
+
+\subsection{Läsa artikel}
+
+För att läsa en artikel markeras ett flöde till vänster i
+gränssnittet, sedan markeras en artikel i listan som dyker upp till
+höger om flödena. Då visas artikelns innehåll i fältet under
+artiklarna, se figur \ref{fig:read-item-out}.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=110mm]{images/read-item-out.png}
+    \caption{Läsa artikel.}
+    \label{fig:read-item-out}
+  \end{center}
+\end{figure}
+
+Innehållet i en artikel visas som \textit{html} vilket innebär att
+bilder kommer att visas. En länk som hänvisar till artikelns ursprung
+visas även men i nuläget händer ingenting om användaren klickar på
+länken. Dock går det ju alltid att klippa ut och klistra in i en
+webbläsare.
+
+\subsection{Uppdatering av flöden}
+
+Här följer ett scenario som visar på en uppdatering där en ny artikel
+tillagts i ett flödes ursprungliga resurs. I
+RSSxml~\ref{verb:1-test-xml} visas ett RSS-flödet innan uppdatering
+sker. Läggs detta flöde till i programmet ser gränssnittet ut enligt
+figur~\ref{fig:update-test1-out}.
+
+\begin{program}
+\begin{footnotesize}
+\begin{verbatim}
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0">
+  <channel>
+    <title>Localhost test</title>
+    <link>http://localhost/~anton/test.xml</link>
+    <description>Test kanal</description>
+
+    <item>
+      <title>Test titel</title>
+      <link>http://localhost/~anton/</link>
+      <description>Test beskrivning</description>
+    </item>
+  </channel>
+</rss>
+\end{verbatim}
+\end{footnotesize}
+\caption{Flöde innan uppdatering.}
+\label{verb:1-test-xml}
+\end{program}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=110mm]{images/update-test1-out.png}
+    \caption{Före uppdatering.}
+    \label{fig:update-test1-out}
+  \end{center}
+\end{figure}
+
+Läggs en ny artikel (element av typen \verb!<item/>!) till i flödet
+och användaren uppdaterar flödet kommer gränssnittet att se ut enligt
+figur~\ref{fig:update-test2-out}. Flödets utseende visas i
+RSSxml~\ref{verb:2-test-xml}:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=110mm]{images/update-test2-out.png}
+    \caption{Efter uppdatering.}
+    \label{fig:update-test2-out}
+  \end{center}
+\end{figure}
+
+\begin{program}
+\begin{footnotesize}
+\begin{verbatim}
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0">
+  <channel>
+    <title>Localhost test</title>
+    <link>http://localhost/~anton/test.xml</link>
+    <description>Test kanal</description>
+
+    <item>
+      <title>Test titel</title>
+      <link>http://localhost/~anton/</link>
+      <description>Test beskrivning</description>
+    </item>
+
+    <item>
+      <title>Test titel 2</title>
+      <link>http://localhost/~anton/</link>
+      <description>Test beskrivning</description>
+    </item>
+  </channel>
+</rss>
+\end{verbatim}
+\end{footnotesize}
+\caption{Flöde efter uppdatering.}
+\label{verb:2-test-xml}
+\end{program}
+
+Konfigurationsfilen som programmet har sparat undan för att
+handlingarna användaren har utfört har för detta flöde nu utseendet
+som visas i RSSxml~\ref{verb:jss-xml}. Detta flöde är sparat till
+hårddisken i mappen \textit{config} i samma mapp som klassfilerna
+ligger. Filnamnet är:
+
+\verb!http---localhost--anton-test-xml-feed.xml!p
+
+\begin{program}
+\begin{footnotesize}
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<jss version="2.0" feedLink="http://localhost/~anton/test.xml">
+  <channel>
+    <title>Localhost test</title>
+    <link>http://localhost/~anton/test.xml</link>
+    <description>Test kanal</description>
+    <item isRead="true">
+      <title>Test titel</title>
+      <description>Test beskrivning</description>
+      <link>http://localhost/~anton/</link>
+    </item>
+    <item isRead="false">
+      <title>Test titel 2</title>
+      <description>Test beskrivning</description>
+      <link>http://localhost/~anton/</link>
+    </item>
+  </channel>
+</jss>
+\end{verbatim}
+\end{footnotesize}
+\caption{Flöde efter uppdatering.}
+\label{verb:jss-xml}
+\end{program}
 
 \section{Diskussion}\label{Diskussion}
 % Hur fungerade det att följa en kodkonvention? Vilka var fördelarna
