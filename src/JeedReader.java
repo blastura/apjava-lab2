@@ -1,6 +1,6 @@
 /*
  * @(#)JeedReader.java
- * Time-stamp: "2008-12-03 02:30:57 anton"
+ * Time-stamp: "2008-12-03 12:04:36 anton"
  */
 
 import java.awt.event.ActionEvent;
@@ -89,10 +89,12 @@ public class JeedReader implements Observer {
             jeedModel.updateFeeds();
         } catch (IOException e) {
             //TODO - fix error message
-            jeedView.showErrorMessage(e.getMessage());
+            logger.warning(e.toString());
+            jeedView.showErrorMessage(e.toString());
         } catch (JDOMException e) {
             // TODO - fix error message
-            jeedView.showErrorMessage(e.getMessage());
+            logger.warning(e.toString());
+            jeedView.showErrorMessage(e.toString());
         }
     }
     
@@ -107,10 +109,12 @@ public class JeedReader implements Observer {
             jeedModel.updateFeed(feed);
         } catch (IOException e) {
             //TODO - fix error message
-            jeedView.showErrorMessage(e.getMessage());
+            logger.warning(e.toString());
+            jeedView.showErrorMessage(e.toString());
         } catch (JDOMException e) {
-            // TODO - fix error message
-            jeedView.showErrorMessage(e.getMessage());
+            // TODO - fix error messagne
+            logger.warning(e.toString());
+            jeedView.showErrorMessage(e.toString());
         }
     }
     

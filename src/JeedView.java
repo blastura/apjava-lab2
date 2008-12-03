@@ -1,6 +1,6 @@
 /*
  * @(#)JeedView.java
- * Time-stamp: "2008-12-03 00:31:24 anton"
+ * Time-stamp: "2008-12-03 12:30:41 anton"
  */
 
 import java.awt.BorderLayout;
@@ -201,7 +201,8 @@ public class JeedView extends JFrame implements Observer {
      */
     public String promtForFeedUrlString(String errorMsg) {
         String result =
-            JOptionPane.showInputDialog(this, errorMsg + "Enter the URL to a feed: ");
+            JOptionPane.showInputDialog(this, errorMsg
+                                        + "Enter the URL to a feed: ");
         return result;
     }
     
@@ -277,13 +278,14 @@ public class JeedView extends JFrame implements Observer {
     /* Methods to display OptionPanes ******************************/
     
     /**
-     * Displays an JOptionPane to to display an error message if something has
+     * Displays an JOptionPane to to display an error message if something has  
      * gone wrong and the user needs to know about it.
      *
      * @param errorMsg An error message to be displayed.
      */
     public void showErrorMessage(String errorMsg) {
-        JOptionPane.showMessageDialog(this, errorMsg, "alert", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, errorMsg, "alert",
+                                      JOptionPane.ERROR_MESSAGE);
     }
     
     
@@ -306,10 +308,6 @@ public class JeedView extends JFrame implements Observer {
         FeedItem[] items = this.jeedModel.getItemsForFeed(selectedFeed);
 
         this.itemList.setListData(items);
-        // TODO - There seems to be problems when updating feeds, the new items
-        // won't display directly.
-        this.itemList.updateUI();
-        this.itemList.validate();
     }
 
     /**
@@ -367,26 +365,18 @@ public class JeedView extends JFrame implements Observer {
         // TODO detect and display new items better.
         logger.info("Update(...) JeedView Thread is: "
                     + Thread.currentThread().toString());
-        try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                    public void run() {
-                        if (arg instanceof Feed) {
-                            logger.info("New feed detected");
-                            feedListModel.addElement(arg);
-                            // TODO replace "newItems"" with constant, or change
-                            // behavior to use a feed instead.
-                        } else if (arg.equals("newItems")) {
-                            logger.info("New items detected");
-                            showItemsForCurrentFeedSelection();
-                        }
+        SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    if (arg instanceof Feed) {
+                        logger.info("New feed detected");
+                        feedListModel.addElement(arg);
+                        // TODO replace "newItems"" with constant, or change
+                        // behavior to use a feed instead.
+                    } else if (arg.equals("newItems")) {
+                        logger.info("New items detected");
+                        showItemsForCurrentFeedSelection();
                     }
-                });
-        } catch (InterruptedException e) {
-            // TODO - fix error message
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO - fix error message
-            e.printStackTrace();
-        }
+                }
+            });
     }
 }

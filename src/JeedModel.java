@@ -1,6 +1,6 @@
 /*
  * @(#)JeedModel.java
- * Time-stamp: "2008-12-02 22:36:11 anton"
+ * Time-stamp: "2008-12-03 12:26:49 anton"
  */
 
 import java.io.IOException;
@@ -78,11 +78,7 @@ public class JeedModel extends Observable {
                             + " in feed: " + feed);
                 isChanged = true;
                 newItems.add(updateItem);
-                
-                // Notify attached observers
-                setChanged();
-                // TODO remove and use a constant instead of "newItems"
-                notifyObservers("newItems");
+
             }
         }
 
@@ -90,6 +86,11 @@ public class JeedModel extends Observable {
         for (FeedItem newItem : newItems) {
             feed.addItem(newItem);
         }
+        
+        // Notify attached observers
+        setChanged();
+        // TODO remove and use a constant instead of "newItems"
+        notifyObservers("newItems");
         // Could be used If updateFeeds() wants to know if a change occur ed
         return isChanged;
     }

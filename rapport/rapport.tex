@@ -90,15 +90,41 @@
 Denna laboration gick ut på att skriva en RSS-läsare med grafiskt
 användar\-gränssnitt i programmerings\-språket Java. RSS står för
 Really Simple Syndication och är ett filformat som används för att på
-ett standardiserat sätt spara undan information i en lista. Oftast
-består denna information av något typ av artikel.
+ett standardiserat sätt spara undan information i en XML-fil. Oftast
+består denna information en samling artiklar, till exempel nyheter.
 
 En RSS-läsare fungerar ungefär som en mailklient, det vill säga
-användare kan välja att prenumerera på valda RSS-flöden. Läsaren visar
-upp artiklarna som finns i RSS-flödet, dessa kan läsas och markeras då
-oftast som lästa på något sätt.
+användare kan välja att prenumerera på valda RSS-flöden. Rss-läsaren
+visar upp artiklarna som finns i RSS-flödet, dessa kan läsas och
+markeras då oftast som lästa på något sätt.
 
-Exempel på RSS-flöde:\\
+Nedan visas ett kort exempel på hur ett RSS-flöde kan se ut:
+\begin{footnotesize}
+\begin{verbatim}
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0">
+  <channel>
+    <title>Localhost exempel</title>
+    <link>http://localhost/~anton/exempel.xml</link>
+    <description>Exempel kanal</description>
+
+    <item>
+      <title>Exempel titel</title>
+      <link>http://localhost/~anton/</link>
+      <description>Exempel beskrivning</description>
+    </item>
+
+    <item>
+      <title>Exempel titel två</title>
+      <link>http://localhost/~anton/</link>
+      <description>Exempel beskrivning två</description>
+    </item>
+  </channel>
+</rss>
+\end{verbatim}
+\end{footnotesize}
+
+Exempel på en tidnings RSS-flöde, se länk:\\
 \verb!http://sydsvenskan.se/senastenytt/?context=senasteNyttRss!
 
 Problemspecifikation finns i original på:\\
@@ -124,7 +150,7 @@ kommandot:
 
 \verb!salt:~/edu/apjava/lab2> ant test-run!
 
-När programmet startar läses föregående sparade flöden från katalogen
+När programmet startar läses föregående sparade flöden från kata\-logen
 \verb!bin/config! in. Är det första gången programmet startar kommer
 denna katalog att vara tom. Finns det flöden i katalogen kommer
 gränssnittet att se ut ungefär som i figur \ref{fig:gui-out}.
@@ -147,7 +173,7 @@ till nya flöden via knappen \textit{Add} eller via menyn
 \textit{Feeds/Add feed}.
 
 För att uppdatera alla flöden används knappen \textit{Refresh} eller
-menyvalet \textit{Feeds} och sedan \texttt{Update~all~feeds}. För att
+menyvalet \textit{Feeds} och sedan \textit{Update~all~feeds}. För att
 enbart uppdatera markerat flöde används menyvalet
 \textit{Feeds/Update~selected~feed}, varje flöde uppdateras även varje
 gång de markeras i listan.
@@ -269,7 +295,7 @@ Den abstrakta klassen \textit{Feed} implementerar alla funktioner som
 bör vara gemensamma för alla typer av flöden som ska kunna sparas i
 programmet. Främst är ''Get''- och ''Set''-metoder implementerade för
 information som rör flöden. Exempel på sådan information är flödets
-titel, URL, typ, version, beskrivning.
+titel, URL, typ, version och beskrivning.
 
 Metoden \textit{toString()} är överlagrad för att returnera flödets
 titel. Detta används i det grafiska gränssnittet för att skriva ut
@@ -282,7 +308,7 @@ Den abstrakta klassen \textit{FeedItem} implementerade alla funktioner
 som bör vara gemensamma för flödens artiklar. Främst är ''Get''- och
 ''Set''-metoder implementerade för information som rör
 artiklar. Exempel på sådan information är artiklars titel,
-beskrivning, om artikeln är läst eller ej.
+beskrivning och om artikeln är läst eller ej.
 
 Metoden \textit{toString()} är överlagrad för att returnera artikelns
 status, det vill säga om den är läst eller ej och dess titel. En läst
@@ -303,13 +329,13 @@ i katalogen som definieras av konstanten \textit{CONF\_DIR} i klassen
 Källkod finns i bilaga \ref{JeedConfigWriter.java}.
 
 \subsection{FeedOutputter.java}\label{FeedOutputter}
-Klassen \textit{FeedOutputter} skriver ut flöden, \ref{Feed}, till
-antingen en instans av \textit{java.io.OutputStream} eller en instans
-av \textit{java.io.Writer}. I ett mellanled skapas tillfälligt en
-instans av typen \textit{org.jdom.Document}, det är informationen i
-detta objekt som sedan skrivs ut. I nuläget hämtas inte all
-information ur flödet, se begränsningar sektion
-\ref{Begransningar}. % TODO
+Klassen \textit{FeedOutputter} skriver ut flöden av typen
+\textit{Feed}, se avsnitt \ref{Feed}, till antingen en instans av
+\textit{java.io.OutputStream} eller en instans av
+\textit{java.io.Writer}. I ett mellanled skapas tillfälligt en instans
+av typen \textit{org.jdom.Document}, det är informationen i detta
+objekt som sedan skrivs ut. I nuläget hämtas inte all information ur
+flödet, se begränsningar sektion \ref{Begransningar}. % TODO
 
 När flödena sparas undan till disk ändras root-taggen från
 \textit{rss} till \textit{jss} och ett attribut, \textit{feedLink},
@@ -382,7 +408,8 @@ avslutas med \verb!feed.xml!.
 % Vilka problem och begränsningar har din lösning av uppgiften? Hur
 % skulle de kunna rättas till?
 
-Programmet får ses som början av implementation av en fullt fungerande
+\begin{itemize}
+\item Programmet får ses som början av implementation av en fullt fungerande
 RSS-läsare. Hantering av artiklars alla godkända taggar är ej
 gjord. Enbart titel och beskrivning används och även där hade det
 behövts göras mer felkontroller för att vara säker på att de
@@ -392,18 +419,18 @@ flödet. Detta går lätt att ändra på i klassen \textit{RssParser} och
 \textit{RssItem}, alternativt \textit{FeedItem} om man vill att detta
 beteende ska gälla för alla typer flöden programmet ska hantera.
 
-Det hade även kunnat ändrats så att det fanns möjlighet att sätta
+\item Det hade även kunnat ändrats så att det fanns möjlighet att sätta
 godtyckliga ''fält'' i en FeedItem, exempelvis med en metod
 \textit{setElement(String tagName, String value)} eller
 liknande. Denna information skulle kunna sparas undan i en hashtabell.
 
-I det grafiska gränssnittet finns det mycket som går att
+\item I det grafiska gränssnittet finns det mycket som går att
 förbättra. Visningen av nya artiklar fungerar ej bra, när ett flöde är
 uppdaterat med en ny artikel syns inte detta per automatik för
 användare. Först när användaren markerat ett annat flöde och sedan går
 tillbaka till det ursprungliga uppdaterade flödet syns alla nyheter.
 
-Eventuella felmeddelanden som användaren bör få reda på visas i
+\item Eventuella felmeddelanden som användaren bör få reda på visas i
 nuläget upp av en dialogruta med ett felmeddelande, detta kan upplevas
 störande och inte alltid relevant. Till exempel kommer denna ruta upp
 varje gång programmet försöker uppdatera ett flöde och kontakt inte
@@ -411,13 +438,16 @@ kan fås mot ursprungsresursen på Internet. Vissa felmeddelanden och
 andra informationsmeddelanden skulle kunna implementeras och visas på
 mindre störande sätt.
 
-Programmet måste starta från samma katalog som klassfilerna ligger i
+\item Felmeddelanden som kastas, exempelvis av typen
+  \textit{IOException} bör tolkas på ett bättre sätt för att på ett
+  bra sätt meddela användaren vad som har gått galet.
+
+\item Programmet måste starta från samma katalog som klassfilerna ligger i
 för att få rätt relativa sökväg till konfigurationskatalogen
 \textit{config}. Brukar detta vara ett krav eller finns det något
 annat sätt att referera relativa sökvägar? Genom
 java.lang.Class.getResource(String name)?
 
-\begin{itemize}
 \item Det behövs någon typ av indikator på att programmet uppdaterar flöden,
 eller arbetar med något i bakgrunden.
 
@@ -431,13 +461,13 @@ lägga till flöden utan kontakt mot Internet.
 \item Varken flöden eller artiklar kan tas bort via det grafiska
 gränssnittet.
 
-\item Borde skapat en separat JssFeed-klass istället för att låta RssFeed ta
-  emot en Sträng som anger typ i konstruktorn.
+\item Det borde skapats en separat JssFeed-klass istället för att låta
+  RssFeed ta emot en Sträng som anger typ i konstruktorn.
 
 \item Programmet sparar ner alla flöden innan det stängs ner, dock
   måste programmet stängas via fönstret det visas i eller via menyn
   \textit{JeedReader}. Stänger man av programmet med till exempel Mac OSX
-  kortkommando \textit{äpple-q} sparas inte filerna ner. Dock sparas
+  kortkommando \textit{äpple-Q} sparas inte filerna ner. Dock sparas
   filerna varje gång uppdatering sker i \textit{JeedModel}. Det som
   skulle kunna gå förlorat vid sådan stängning är alltså information
   om vilka artiklar som är markerade som lästa efter föregående
@@ -490,7 +520,8 @@ Pekar inskriven URL inte på någon resurs alls fås felmeddelandet:
 \verb!Resource not found.!
 
 Detta är även fallet om det inte finns någon anslutning till
-Internet.
+Internet. Pekar resursen på ett giltigt RSS-flöde kommer detta flöde
+att tolkas och läggas in i programmet.
 
 \begin{figure}[!hbp]
   \begin{center}
@@ -635,6 +666,27 @@ ligger. Filnamnet är:
 \label{verb:jss-xml}
 \end{program}
 
+\subsection{Felmeddelanden}
+Om användaren försöker uppdatera ett flöde, exempelvis via menyn se
+figur~\ref{fig:update-feed}, utan att ha kontakt med dess ursprungsresurs
+fås felmeddelande som kan ses i figur~\ref{fig:error-msg}.
+
+\begin{figure}[!hbp]
+  \begin{center}
+    \includegraphics[width=110mm]{images/update-feed.png}
+    \caption{Uppdatering av ett flöde vi menyn.}
+    \label{fig:update-feed}
+  \end{center}
+\end{figure}
+
+\begin{figure}[!hbp]
+  \begin{center}
+    \includegraphics[width=110mm]{images/error-msg-out.png}
+    \caption{Felmeddelande.}
+    \label{fig:error-msg}
+  \end{center}
+\end{figure}
+
 \section{Diskussion}\label{Diskussion}
 % Hur fungerade det att följa en kodkonvention? Vilka var fördelarna
 % respektive nackdelarna?
@@ -644,19 +696,19 @@ detta bortsett från laboration 1 var första försöket på att
 implementera ett liknande program.
 
 Det skulle vara bra med mer belysande exempel under föreläsningarna
-eller som utdelad kod, där man får givet ett klassdiagram och bra
-design mönster har följts. Det svåra är nästan alltid att komma på ett
-bra sätt att designa ett program. Har man inte gjort liknande program
-förut är sannolikheten att man börjar i fel ände stor.
+eller mer exempel som utdelad kod, där ett klassdiagram är givet och
+bra design mönster har följts. Det svåra är nästan alltid att komma på
+ett bra sätt att designa ett program. Har man inte gjort liknande
+program förut är sannolikheten att man börjar i fel ände stor.
 
-Min implementation fick en del klasser där jag enbart implementerade
-statiska metoder. Hur fungerar dessa jämfört vanliga klasser och
-metoder, exempelvis skulle metoderna FeedParsers kunna vara statiska,
-de ändrar enbart värden som de fått in som parametrar. Dessa klasser
-har jag deklarerat som \textit{final}, detta ska ge en snabbare
+Denna implementation fick en del klasser där enbart statiska metoder
+är implementerade. Hur fungerar dessa jämfört vanliga klasser och
+metoder? Exempelvis skulle metoderna i de olika \textit{FeedParsers}
+kunna vara statiska, de ändrar enbart värden som de fått in som
+parametrar. De som enbart innehåller statiska metoder är deklarerade
+som \textit{final}, detta ska ge en snabbare
 implementation enligt:\\
 \verb!http://www.glenmccl.com/perfj_025.htm!\\
-
 
 \newpage
 \appendix
