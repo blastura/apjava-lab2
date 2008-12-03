@@ -137,8 +137,8 @@ gränssnittet att se ut ungefär som i figur \ref{fig:gui-out}.
   \end{center}
 \end{figure}
 
-Gränssnittet består en lista till vänster som innehåller flöden
-användaren lagt till. Ovan till höger visas titeln för varje artikel i
+Gränssnittet består av en lista till vänster som innehåller flöden
+användaren lagt till, ovan till höger visas titeln för varje artikel i
 valt flöde och under visas beskrivningen av vald artikel.
 
 När en artikel är vald markeras denna som läst genom att texten
@@ -163,7 +163,12 @@ modell. De tre huvudklasserna som driver programmet består av
 \textit{JeedView} som motsvarar \textit{View}-delen och
 \textit{JeedModel} som motsvarar \textit{Model}-delen. Utöver dessa
 finns även ett antal klasser som har hand om mer specifikt beteende,
-främst är dessa klasser till hjälp för klassen \textit{JeedReader}.
+främst är dessa klasser till hjälp för klassen
+\textit{JeedReader}. Klassdiagram finns i figur~\ref{fig:classUML}.
+
+\subsection{API}
+API-dokumentation finns på sidan:\\
+\verb!http://www.cs.umu.se/~dit06ajn/apjava/lab2/!
 
 \newpage
 \begin{figure}[H]
@@ -382,52 +387,64 @@ flödet. Detta går lätt att ändra på i klassen \textit{RssParser} och
 \textit{RssItem}, alternativt \textit{FeedItem} om man vill att detta
 beteende ska gälla för alla typer flöden programmet ska hantera.
 
-Även i det grafiska gränssnittet finns det mycket som går att
+Det hade även kunnat ändrats så att det fanns möjlighet att sätta
+godtyckliga ''fält'' i en FeedItem, exempelvis med en metod
+\textit{setElement(String tagName, String value)} eller
+liknande. Denna information skulle kunna sparas undan i en hashtabell.
+
+I det grafiska gränssnittet finns det mycket som går att
 förbättra. Visningen av nya artiklar fungerar ej bra, när ett flöde är
 uppdaterat med en ny artikel syns inte detta per automatik för
 användare. Först när användaren markerat ett annat flöde och sedan går
 tillbaka till det ursprungliga uppdaterade flödet syns alla nyheter.
 
-Klasserna \textit{JeedConfigWriter} och \textit{FeedOutputter} borde
-kanske slås ihop till en klass.
-
-När nya flöden läggs till i programmet så hämtas och tolkas detta
-direkt. En bieffekt av denna implementation är att det inte går att
-lägga till flöden utan kontakt mot internet.
 
 Eventuella felmeddelanden som användaren bör få reda på visas i
 nuläget upp av en dialogruta med ett felmeddelande, detta kan upplevas
 störande och inte alltid relevant. Till exempel kommer denna ruta upp
 varje gång programmet försöker uppdatera ett flöde och kontakt inte
-kan fås mot ursprungsresursen på internet. Vissa felmeddelanden och
+kan fås mot ursprungsresursen på Internet. Vissa felmeddelanden och
 andra informationsmeddelanden skulle kunna implementeras och visas på
 mindre störande sätt.
-
-Varken flöden eller artiklar kan tas bort via det grafiska
-gränssnittet.
-
-Det behövs någon typ av indikator på att programmet uppdaterar
-flöden...
-
-Borde skapat en separat JssFeed-klass istället för att låta RssFeed ta
-emot en Sträng som anger typ i konstruktorn.
-
-\section{Reflektioner}\label{Reflektioner}
-% Var det något som var speciellt krångligt? Vilka problem uppstod och
-% hur löste ni dem? Allmänna synpunkter. Hur skulle man kunna använda
-% dessa metoder i andra mer omfattande system?
-
-Klasser med enbart statiska metoder jämfört vanliga klasser och
-metoder, exempelvis skulle metoderna FeedParsers kunna vara statiska,
-de ändrar enbart värden som de fått in som parametrar.
-
-Trådar och uppdatering av grafiskt gränssnitt. ItemList.
 
 Programmet måste starta från samma katalog som klassfilerna ligger i
 för att få rätt relativa sökväg till konfigurationskatalogen
 \textit{config}. Brukar detta vara ett krav eller finns det något
 annat sätt att referera relativa sökvägar? Genom
 java.lang.Class.getResource(String name)?
+
+\begin{itemize}
+\item Det behövs någon typ av indikator på att programmet uppdaterar flöden,
+eller arbetar med något i bakgrunden.
+
+\item Klasserna \textit{JeedConfigWriter} och \textit{FeedOutputter} borde
+kanske slås ihop till en klass.
+
+\item När nya flöden läggs till i programmet så hämtas och tolkas detta
+direkt. En bieffekt av denna implementation är att det inte går att
+lägga till flöden utan kontakt mot Internet.
+
+\item Varken flöden eller artiklar kan tas bort via det grafiska
+gränssnittet.
+
+\item Borde skapat en separat JssFeed-klass istället för att låta RssFeed ta
+emot en Sträng som anger typ i konstruktorn.
+\end{itemize}
+
+\section{Reflektioner}\label{Reflektioner}
+% Var det något som var speciellt krångligt? Vilka problem uppstod och
+% hur löste ni dem? Allmänna synpunkter. Hur skulle man kunna använda
+% dessa metoder i andra mer omfattande system?
+
+Det besvärliga i denna laboration var att designa själva strukturen på
+programmet. Jag tycker att jag fick ihop en någorlunda lösning som man
+skulle kunna bygga vidare på.
+
+Jag försökte i störta möjliga mån att följa designmodellen
+\textit{Model-View-Controller}. Detta kändes bra eftersom det oftast
+är så program implementeras, dock blev det en det metoder i klassen,
+som motsvarar \textit{View}, var enda funktion är att fästa
+''lyssnare'' till specifika element.
 
 \section{Testkörningar}\label{Testkorningar}
 % Noggranna testkörningar där man ser att programmet fungerar som det
@@ -439,7 +456,7 @@ Följande avsnitt beskriver några olika scenarion för programmet.
 När användaren valt att lägga till ett nytt flöde kommer
 Popop-dialogruta, se figur \ref{fig:add-feed}.
 
-\begin{figure}[H]
+\begin{figure}[!hbp]
   \begin{center}
     \includegraphics[width=110mm]{images/add-feed.png}
     \caption{Lägga till flöde.}
@@ -460,9 +477,9 @@ Pekar inskriven URL inte på någon resurs alls fås felmeddelandet:
 \verb!Resource not found.!
 
 Detta är även fallet om det inte finns någon anslutning till
-internet.
+Internet.
 
-\begin{figure}[H]
+\begin{figure}[!hbp]
   \begin{center}
     \includegraphics[width=110mm]{images/malformed-url.png}
     \caption{Felformaterad URL.}
@@ -471,13 +488,12 @@ internet.
 \end{figure}
 
 \subsection{Läsa artikel}
-
 För att läsa en artikel markeras ett flöde till vänster i
 gränssnittet, sedan markeras en artikel i listan som dyker upp till
 höger om flödena. Då visas artikelns innehåll i fältet under
 artiklarna, se figur \ref{fig:read-item-out}.
 
-\begin{figure}[H]
+\begin{figure}[!hbp]
   \begin{center}
     \includegraphics[width=110mm]{images/read-item-out.png}
     \caption{Läsa artikel.}
@@ -492,7 +508,6 @@ länken. Dock går det ju alltid att klippa ut och klistra in i en
 webbläsare.
 
 \subsection{Uppdatering av flöden}
-
 Här följer ett scenario som visar på en uppdatering där en ny artikel
 tillagts i ett flödes ursprungliga resurs. I
 RSSxml~\ref{verb:1-test-xml} visas ett RSS-flödet innan uppdatering
@@ -522,7 +537,7 @@ figur~\ref{fig:update-test1-out}.
 \label{verb:1-test-xml}
 \end{program}
 
-\begin{figure}[H]
+\begin{figure}[!hbp]
   \begin{center}
     \includegraphics[width=110mm]{images/update-test1-out.png}
     \caption{Före uppdatering.}
@@ -535,7 +550,7 @@ och användaren uppdaterar flödet kommer gränssnittet att se ut enligt
 figur~\ref{fig:update-test2-out}. Flödets utseende visas i
 RSSxml~\ref{verb:2-test-xml}:
 
-\begin{figure}[H]
+\begin{figure}[!hbp]
   \begin{center}
     \includegraphics[width=110mm]{images/update-test2-out.png}
     \caption{Efter uppdatering.}
@@ -603,13 +618,31 @@ ligger. Filnamnet är:
 </jss>
 \end{verbatim}
 \end{footnotesize}
-\caption{Flöde efter uppdatering.}
+\caption{Flöde som sparas av programmet.}
 \label{verb:jss-xml}
 \end{program}
 
 \section{Diskussion}\label{Diskussion}
 % Hur fungerade det att följa en kodkonvention? Vilka var fördelarna
 % respektive nackdelarna?
+Laboration har varit intressant och givande, dock var det väldigt
+svårt att få kläm på både trådar och grafiskt gränssnitt samtidigt då
+detta bortsett från laboration 1 var första försöket på att
+implementera ett liknande program.
+
+Det skulle vara bra med mer belysande exempel under föreläsningarna
+eller som utdelad kod, där man får givet ett klassdiagram och bra
+design mönster har följts. Det svåra är nästan alltid att komma på ett
+bra sätt att designa ett program. Har man inte gjort liknande program
+förut är sannolikheten att man börjar i fel ände stor.
+
+Min implementation fick en del klasser där jag enbart implementerade
+statiska metoder. Hur fungerar dessa jämfört vanliga klasser och
+metoder, exempelvis skulle metoderna FeedParsers kunna vara statiska,
+de ändrar enbart värden som de fått in som parametrar. Dessa klasser
+har jag deklarerat som \textit{final}, detta ska ge en snabbare
+implementation enligt:\\
+\verb!http://www.glenmccl.com/perfj_025.htm!\\
 
 
 \newpage

@@ -1,6 +1,6 @@
 /*
  * @(#)JeedReader.java
- * Time-stamp: "2008-12-02 22:38:06 anton"
+ * Time-stamp: "2008-12-03 02:30:57 anton"
  */
 
 import java.awt.event.ActionEvent;
@@ -277,6 +277,7 @@ public class JeedReader implements Observer {
                             // Updates UI from different thread.
                             SwingUtilities.invokeLater(new Runnable() {
                                     public void run() {
+                                        // TODO - How do I break this long line?
                                         JeedReader.this.jeedView.showItemsForCurrentFeedSelection();
                                     }
                                 });
