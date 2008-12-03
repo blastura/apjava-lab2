@@ -209,6 +209,11 @@ handlingar. \textit{JeedReader}s konstruktor gör följande:
 \item \textit{JeedView} visas för användaren.
 \end{itemize}
 
+Klassen \textit{JeedReader} sätts även som lyssnare
+(\textit{Observer}) till klassen \textit{JeedModel}, varje gång
+uppdatering sker i \textit{JeedModel} sparas konfigurationsfilerna,
+innehållande information om flödena, i katalogen \textit{config}.
+
 Källkod finns i bilaga \ref{JeedReader.java}.
 
 \subsection{JeedView.java}\label{JeedView}
@@ -398,7 +403,6 @@ uppdaterat med en ny artikel syns inte detta per automatik för
 användare. Först när användaren markerat ett annat flöde och sedan går
 tillbaka till det ursprungliga uppdaterade flödet syns alla nyheter.
 
-
 Eventuella felmeddelanden som användaren bör få reda på visas i
 nuläget upp av en dialogruta med ett felmeddelande, detta kan upplevas
 störande och inte alltid relevant. Till exempel kommer denna ruta upp
@@ -428,7 +432,16 @@ lägga till flöden utan kontakt mot Internet.
 gränssnittet.
 
 \item Borde skapat en separat JssFeed-klass istället för att låta RssFeed ta
-emot en Sträng som anger typ i konstruktorn.
+  emot en Sträng som anger typ i konstruktorn.
+
+\item Programmet sparar ner alla flöden innan det stängs ner, dock
+  måste programmet stängas via fönstret det visas i eller via menyn
+  \textit{JeedReader}. Stänger man av programmet med till exempel Mac OSX
+  kortkommando \textit{äpple-q} sparas inte filerna ner. Dock sparas
+  filerna varje gång uppdatering sker i \textit{JeedModel}. Det som
+  skulle kunna gå förlorat vid sådan stängning är alltså information
+  om vilka artiklar som är markerade som lästa efter föregående
+  sparning.
 \end{itemize}
 
 \section{Reflektioner}\label{Reflektioner}
